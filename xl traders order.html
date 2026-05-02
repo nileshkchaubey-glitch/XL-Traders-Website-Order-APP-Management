@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>XL Traders - Order System</title>
+<meta name="theme-color" content="#0F1410">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{bg:'#0F1410',card:'#1A2118',accent:'#E8A838',accent2:'#2D8B5E',fg:'#F0EDE6',muted:'#8A9488',border:'#2A3328',surface:'#151B17',danger:'#E84848'},fontFamily:{sans:['Inter','sans-serif'],display:['Space Grotesk','sans-serif'],mono:['JetBrains Mono','monospace']}}}}
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#0F1410}::-webkit-scrollbar-thumb{background:#2A3328;border-radius:4px}
+body{overscroll-behavior:none}
+.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+.view{min-height:100dvh;display:flex;flex-direction:column}
+.glass{background:rgba(26,33,24,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.pulse-glow{animation:pulseGlow 3s ease-in-out infinite}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 20px rgba(232,168,56,.15)}50%{box-shadow:0 0 40px rgba(232,168,56,.3)}}
+.fade-in{animation:fadeIn .4s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.slide-up{animation:slideUp .3s ease-out}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.shimmer{background:linear-gradient(90deg,#1A2118 25%,#243028 50%,#1A2118 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.qty-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer;transition:all .15s;user-select:none}
+input[type="file"]{display:none}
+.badge{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;border-radius:9px;background:#E8A838;color:#0F1410;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px}
+select,input[type="text"],input[type="number"],input[type="tel"],input[type="password"],textarea{background:#151B17;border:1px solid #2A3328;color:#F0EDE6;border-radius:10px;padding:10px 14px;font-size:14px;width:100%;outline:none;font-family:'Inter',sans-serif;transition:border-color .2s}
+select:focus,input:focus,textarea:focus{border-color:#E8A838}
+.biz-card{cursor:pointer;padding:16px 12px;border-radius:14px;border:2px solid #2A3328;text-align:center;transition:all .2s;background:#151B17}
+.biz-card:hover,.biz-card.active{border-color:#E8A838;background:rgba(232,168,56,.08)}
+.biz-card.active iconify-icon{color:#E8A838}
+.product-card{background:#1A2118;border:1px solid #2A3328;border-radius:16px;overflow:hidden;transition:all .2s;cursor:pointer}
+.product-card:hover{border-color:#3A4A3E;transform:translateY(-2px)}
+.cat-card{background:#151B17;border:1px solid #2A3328;border-radius:16px;padding:20px 16px;text-align:center;cursor:pointer;transition:all .2s}
+.cat-card:hover{border-color:#E8A838;background:rgba(232,168,56,.05)}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;padding:12px 24px;border-radius:12px;font-size:13px;font-weight:500;animation:toastIn .3s ease-out,toastOut .3s ease-in 2.7s forwards;pointer-events:none}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateX(-50%) translateY(-20px)}}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:flex-end;justify-content:center}
+@media(min-width:640px){.modal-overlay{align-items:center}}
+</style>
+</head>
+<body class="bg-bg text-fg font-sans">
+
+<!-- ====== SPLASH ====== -->
+<div id="view-splash" class="view items-center justify-center bg-bg">
+<div class="text-center fade-in">
+<div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-accent/10 border border-accent/30 flex items-center justify-center pulse-glow">
+<iconify-icon icon="mdi:package-variant-closed" width="40" class="text-accent"></iconify-icon>
+</div>
+<h1 class="font-display text-3xl font-700 tracking-tight">XL TRADERS</h1>
+<p class="text-muted text-sm mt-2 tracking-widest uppercase">Disposable & Packaging</p>
+<div class="mt-8 flex items-center justify-center gap-1.5">
+<div class="w-2 h-2 rounded-full bg-accent animate-bounce" style="animation-delay:0s"></div>
+<div class="w-2 h-2 rounded-full bg-accent animate-bounce" style="animation-delay:.15s"></div>
+<div class="w-2 h-2 rounded-full bg-accent animate-bounce" style="animation-delay:.3s"></div>
+</div>
+<p class="text-muted/60 text-xs mt-4">Surat, Gujarat</p>
+</div>
+</div>
+
+<!-- ====== SETUP ====== -->
+<div id="view-setup" class="view hidden">
+<div class="flex-1 flex flex-col justify-center px-6 py-10 max-w-md mx-auto w-full">
+<div class="text-center mb-8 fade-in">
+<iconify-icon icon="mdi:account-plus" width="48" class="text-accent mb-3"></iconify-icon>
+<h2 class="font-display text-2xl font-600">Welcome to XL Traders</h2>
+<p class="text-muted text-sm mt-2">Set up your profile to start ordering</p>
+</div>
+<div class="space-y-4 fade-in" style="animation-delay:.1s">
+<div>
+<label class="text-xs text-muted uppercase tracking-wider mb-1.5 block">Your Name *</label>
+<input type="text" id="inp-name" placeholder="Enter your full name">
+</div>
+<div>
+<label class="text-xs text-muted uppercase tracking-wider mb-1.5 block">Phone Number *</label>
+<input type="tel" id="inp-phone" placeholder="9876543210" maxlength="10">
+</div>
+<div>
+<label class="text-xs text-muted uppercase tracking-wider mb-1.5 block">Business Address</label>
+<textarea id="inp-address" rows="2" placeholder="Shop / Kitchen address"></textarea>
+</div>
+<div>
+<label class="text-xs text-muted uppercase tracking-wider mb-2 block">Business Type *</label>
+<div class="grid grid-cols-2 gap-2" id="biz-type-grid"></div>
+</div>
+<button onclick="saveSetup()" class="w-full mt-4 bg-accent text-bg font-600 py-3.5 rounded-xl text-sm tracking-wide hover:bg-accent/90 transition-all active:scale-[.98]">
+Start Ordering
+</button>
+<p id="setup-error" class="text-danger text-xs text-center mt-2 hidden"></p>
+</div>
+</div>
+</div>
+
+<!-- ====== APP SHELL ====== -->
+<div id="app-shell" class="hidden" style="min-height:100dvh;display:none;flex-direction:column">
+<!-- Top Bar -->
+<header class="glass sticky top-0 z-50 border-b border-border px-4 py-3">
+<div class="flex items-center justify-between max-w-lg mx-auto">
+<div class="flex items-center gap-2.5 cursor-pointer" onclick="navigateTo('home')">
+<div class="w-8 h-8 rounded-lg bg-accent/15 flex items-center justify-center">
+<iconify-icon icon="mdi:package-variant-closed" width="18" class="text-accent"></iconify-icon>
+</div>
+<span class="font-display font-600 text-sm tracking-tight">XL TRADERS</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative" onclick="navigateTo('cart')">
+<iconify-icon icon="mdi:cart-outline" width="22" class="text-muted hover:text-fg transition-colors cursor-pointer"></iconify-icon>
+<span id="cart-badge" class="badge hidden">0</span>
+</div>
+<div onclick="navigateTo('admin-login')" class="cursor-pointer opacity-40 hover:opacity-100 transition-opacity">
+<iconify-icon icon="mdi:shield-account-outline" width="20" class="text-muted"></iconify-icon>
+</div>
+</div>
+</div>
+</header>
+
+<!-- Main Content -->
+<main class="flex-1 pb-20 max-w-lg mx-auto w-full">
+<div id="view-home"></div>
+<div id="view-categories" class="hidden"></div>
+<div id="view-products" class="hidden"></div>
+<div id="view-cart" class="hidden"></div>
+<div id="view-history" class="hidden"></div>
+<div id="view-admin-login" class="hidden"></div>
+<div id="view-admin" class="hidden"></div>
+</main>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 left-0 right-0 z-50 glass border-t border-border">
+<div class="flex justify-around max-w-lg mx-auto py-2">
+<button onclick="navigateTo('home')" data-nav="home" class="nav-btn flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl transition-colors">
+<iconify-icon icon="mdi:home" width="22"></iconify-icon>
+<span class="text-[10px] font-500">Home</span>
+</button>
+<button onclick="navigateTo('categories')" data-nav="categories" class="nav-btn flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl transition-colors">
+<iconify-icon icon="mdi:view-grid" width="22"></iconify-icon>
+<span class="text-[10px] font-500">Categories</span>
+</button>
+<button onclick="navigateTo('cart')" data-nav="cart" class="nav-btn flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl transition-colors relative">
+<iconify-icon icon="mdi:cart" width="22"></iconify-icon>
+<span class="text-[10px] font-500">Cart</span>
+<span id="cart-badge-nav" class="badge hidden" style="top:-2px;right:2px">0</span>
+</button>
+<button onclick="navigateTo('history')" data-nav="history" class="nav-btn flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl transition-colors">
+<iconify-icon icon="mdi:clock-outline" width="22"></iconify-icon>
+<span class="text-[10px] font-500">Orders</span>
+</button>
+</div>
+</nav>
+</div>
+
+<!-- Modal Container -->
+<div id="modal-container"></div>
+
+<script>
+// ========== DATA ==========
+const BUSINESS_TYPES = [
+  {id:'street-food', label:'Street Food', icon:'mdi:food-drumstick'},
+  {id:'cloud-kitchen', label:'Cloud Kitchen', icon:'mdi:cloud-outline'},
+  {id:'restaurant', label:'Restaurant', icon:'mdi:silverware-fork-knife'},
+  {id:'caterer', label:'Caterer', icon:'mdi:party-popper'},
+  {id:'kirana', label:'Kirana Store', icon:'mdi:store'},
+  {id:'juice-center', label:'Juice Center', icon:'mdi:cup'},
+  {id:'fast-food', label:'Fast Food', icon:'mdi:hamburger'}
+];
+
+const CATEGORIES = [
+  {id:'paper-cups', label:'Paper Cups', icon:'mdi:cup', color:'#4ECDC4'},
+  {id:'plastic-cups', label:'Plastic Cups', icon:'mdi:cup-water', color:'#45B7D1'},
+  {id:'food-containers', label:'Food Containers', icon:'mdi:food-takeout-box', color:'#2D8B5E'},
+  {id:'packaging-boxes', label:'Packaging Boxes', icon:'mdi:package-variant', color:'#E8A838'},
+  {id:'carry-bags', label:'Carry Bags', icon:'mdi:shopping', color:'#9B59B6'},
+  {id:'wrapping', label:'Wrapping Materials', icon:'mdi:gift', color:'#E74C8B'},
+  {id:'plates-bowls', label:'Plates & Bowls', icon:'mdi:food-variant', color:'#F39C12'},
+  {id:'cutlery', label:'Straws & Cutlery', icon:'mdi:silverware-fork-knife', color:'#1ABC9C'}
+];
+
+const DEFAULT_PRODUCTS = [
+  // Paper Cups
+  {id:1,name:'Paper Cup 50ml',cat:'paper-cups',price:0.80,unit:'pcs',min:100,desc:'For chai / shot servings',biz:['street-food','juice-center']},
+  {id:2,name:'Paper Cup 100ml',cat:'paper-cups',price:0.90,unit:'pcs',min:100,desc:'Small serving cup',biz:['street-food','juice-center','fast-food']},
+  {id:3,name:'Paper Cup 150ml',cat:'paper-cups',price:1.00,unit:'pcs',min:100,desc:'Regular tea cup size',biz:['street-food','restaurant']},
+  {id:4,name:'Paper Cup 200ml',cat:'paper-cups',price:1.20,unit:'pcs',min:100,desc:'Medium serving cup',biz:['restaurant','cafe','cloud-kitchen']},
+  {id:5,name:'Paper Cup 250ml',cat:'paper-cups',price:1.40,unit:'pcs',min:100,desc:'Large cup - coffee / lassi',biz:['restaurant','cloud-kitchen','juice-center']},
+  {id:6,name:'Paper Cup 350ml',cat:'paper-cups',price:1.80,unit:'pcs',min:50,desc:'Extra large - shakes / smoothies',biz:['juice-center','fast-food','cloud-kitchen']},
+  // Plastic Cups
+  {id:7,name:'PP Cup 50ml',cat:'plastic-cups',price:0.50,unit:'pcs',min:200,desc:'Economy plastic cup',biz:['street-food','juice-center']},
+  {id:8,name:'PP Cup 100ml',cat:'plastic-cups',price:0.60,unit:'pcs',min:200,desc:'Small plastic cup',biz:['street-food','fast-food']},
+  {id:9,name:'PP Cup 200ml',cat:'plastic-cups',price:0.80,unit:'pcs',min:100,desc:'Medium plastic cup',biz:['juice-center','fast-food']},
+  {id:10,name:'PP Cup 250ml',cat:'plastic-cups',price:0.90,unit:'pcs',min:100,desc:'Large plastic cup',biz:['juice-center','fast-food']},
+  {id:11,name:'PP Cup 300ml',cat:'plastic-cups',price:1.00,unit:'pcs',min:100,desc:'Jumbo plastic cup',biz:['juice-center','cloud-kitchen']},
+  // Food Containers
+  {id:12,name:'Aluminium Container 250ml',cat:'food-containers',price:5.50,unit:'pcs',min:50,desc:'Small foil container with lid',biz:['cloud-kitchen','caterer','restaurant']},
+  {id:13,name:'Aluminium Container 500ml',cat:'food-containers',price:8.00,unit:'pcs',min:50,desc:'Medium foil container with lid',biz:['cloud-kitchen','caterer','restaurant']},
+  {id:14,name:'Aluminium Container 750ml',cat:'food-containers',price:10.00,unit:'pcs',min:50,desc:'Large foil container with lid',biz:['cloud-kitchen','caterer','restaurant']},
+  {id:15,name:'Aluminium Container 1000ml',cat:'food-containers',price:12.00,unit:'pcs',min:25,desc:'1 kg foil container with lid',biz:['caterer','cloud-kitchen']},
+  {id:16,name:'Paper Food Box 250ml',cat:'food-containers',price:4.00,unit:'pcs',min:50,desc:'Eco paper box small',biz:['cloud-kitchen','fast-food']},
+  {id:17,name:'Paper Food Box 500ml',cat:'food-containers',price:5.50,unit:'pcs',min:50,desc:'Eco paper box medium',biz:['cloud-kitchen','fast-food','restaurant']},
+  {id:18,name:'Paper Food Box 750ml',cat:'food-containers',price:7.00,unit:'pcs',min:50,desc:'Eco paper box large',biz:['cloud-kitchen','restaurant']},
+  {id:19,name:'Paper Food Box 1000ml',cat:'food-containers',price:8.50,unit:'pcs',min:25,desc:'Eco paper box 1kg',biz:['caterer','cloud-kitchen']},
+  // Packaging Boxes
+  {id:20,name:'Sweet Box Small',cat:'packaging-boxes',price:8.00,unit:'pcs',min:25,desc:'For 250g sweets',biz:['kirana','caterer']},
+  {id:21,name:'Sweet Box Medium',cat:'packaging-boxes',price:12.00,unit:'pcs',min:25,desc:'For 500g sweets',biz:['kirana','caterer']},
+  {id:22,name:'Sweet Box Large',cat:'packaging-boxes',price:16.00,unit:'pcs',min:10,desc:'For 1kg sweets',biz:['kirana','caterer']},
+  {id:23,name:'Cake Box 500g',cat:'packaging-boxes',price:15.00,unit:'pcs',min:10,desc:'Small cake box',biz:['cloud-kitchen','restaurant']},
+  {id:24,name:'Cake Box 1kg',cat:'packaging-boxes',price:22.00,unit:'pcs',min:10,desc:'Medium cake box',biz:['cloud-kitchen','restaurant']},
+  {id:25,name:'Pizza Box 8"',cat:'packaging-boxes',price:12.00,unit:'pcs',min:25,desc:'Small pizza box',biz:['cloud-kitchen','fast-food']},
+  {id:26,name:'Pizza Box 10"',cat:'packaging-boxes',price:15.00,unit:'pcs',min:25,desc:'Medium pizza box',biz:['cloud-kitchen','fast-food']},
+  {id:27,name:'Pizza Box 12"',cat:'packaging-boxes',price:18.00,unit:'pcs',min:25,desc:'Large pizza box',biz:['cloud-kitchen','fast-food']},
+  // Carry Bags
+  {id:28,name:'Paper Bag Small',cat:'carry-bags',price:2.50,unit:'pcs',min:100,desc:'Brown kraft bag small',biz:['kirana','restaurant','street-food']},
+  {id:29,name:'Paper Bag Medium',cat:'carry-bags',price:3.50,unit:'pcs',min:100,desc:'Brown kraft bag medium',biz:['kirana','restaurant']},
+  {id:30,name:'Paper Bag Large',cat:'carry-bags',price:5.00,unit:'pcs',min:50,desc:'Brown kraft bag large',biz:['kirana','restaurant','caterer']},
+  {id:31,name:'Non-Woven Bag Small',cat:'carry-bags',price:4.00,unit:'pcs',min:50,desc:'Reusable non-woven small',biz:['kirana','restaurant']},
+  {id:32,name:'Non-Woven Bag Medium',cat:'carry-bags',price:6.00,unit:'pcs',min:50,desc:'Reusable non-woven medium',biz:['kirana','restaurant','caterer']},
+  {id:33,name:'Non-Woven Bag Large',cat:'carry-bags',price:8.00,unit:'pcs',min:25,desc:'Reusable non-woven large',biz:['caterer','restaurant']},
+  // Wrapping
+  {id:34,name:'Butter Paper (1 kg)',cat:'wrapping',price:120,unit:'kg',min:1,desc:'Food grade butter paper',biz:['street-food','restaurant','fast-food']},
+  {id:35,name:'Silver Foil Roll',cat:'wrapping',price:150,unit:'roll',min:5,desc:'Food wrapping silver foil',biz:['restaurant','caterer','cloud-kitchen']},
+  {id:36,name:'Cling Wrap Roll',cat:'wrapping',price:80,unit:'roll',min:5,desc:'Transparent food wrap',biz:['cloud-kitchen','restaurant','caterer']},
+  {id:37,name:'Aluminium Foil Roll',cat:'wrapping',price:180,unit:'roll',min:5,desc:'Heavy duty foil roll',biz:['caterer','cloud-kitchen','restaurant']},
+  {id:38,name:'Tissue Paper Pack',cat:'wrapping',price:45,unit:'pack',min:10,desc:'Napkin tissue 100 pull',biz:['street-food','restaurant','fast-food','juice-center']},
+  // Plates & Bowls
+  {id:39,name:'Paper Plate 6"',cat:'plates-bowls',price:1.20,unit:'pcs',min:200,desc:'Small disposable plate',biz:['street-food','caterer']},
+  {id:40,name:'Paper Plate 8"',cat:'plates-bowls',price:1.80,unit:'pcs',min:200,desc:'Medium disposable plate',biz:['street-food','caterer','restaurant']},
+  {id:41,name:'Paper Plate 10"',cat:'plates-bowls',price:2.50,unit:'pcs',min:100,desc:'Large disposable plate',biz:['caterer','restaurant']},
+  {id:42,name:'Paper Bowl 250ml',cat:'plates-bowls',price:2.00,unit:'pcs',min:100,desc:'Small paper bowl',biz:['street-food','fast-food']},
+  {id:43,name:'Paper Bowl 500ml',cat:'plates-bowls',price:3.00,unit:'pcs',min:100,desc:'Medium paper bowl',biz:['fast-food','cloud-kitchen']},
+  {id:44,name:'Areca Plate 6"',cat:'plates-bowls',price:2.50,unit:'pcs',min:200,desc:'Eco palm leaf plate small',biz:['street-food','caterer']},
+  {id:45,name:'Areca Plate 8"',cat:'plates-bowls',price:3.50,unit:'pcs',min:100,desc:'Eco palm leaf plate medium',biz:['caterer','restaurant']},
+  {id:46,name:'Areca Plate 10"',cat:'plates-bowls',price:4.50,unit:'pcs',min:100,desc:'Eco palm leaf plate large',biz:['caterer','restaurant']},
+  // Cutlery
+  {id:47,name:'Paper Straw',cat:'cutlery',price:0.60,unit:'pcs',min:500,desc:'Eco paper straw',biz:['juice-center','fast-food','cloud-kitchen']},
+  {id:48,name:'Plastic Straw',cat:'cutlery',price:0.30,unit:'pcs',min:500,desc:'Economy plastic straw',biz:['juice-center','fast-food','street-food']},
+  {id:49,name:'Wooden Spoon',cat:'cutlery',price:0.80,unit:'pcs',min:200,desc:'Eco wooden spoon',biz:['cloud-kitchen','caterer','fast-food']},
+  {id:50,name:'Wooden Fork',cat:'cutlery',price:0.80,unit:'pcs',min:200,desc:'Eco wooden fork',biz:['cloud-kitchen','caterer','fast-food']},
+  {id:51,name:'Plastic Spoon',cat:'cutlery',price:0.40,unit:'pcs',min:200,desc:'Economy plastic spoon',biz:['fast-food','street-food','cloud-kitchen']},
+  {id:52,name:'Plastic Fork',cat:'cutlery',price:0.50,unit:'pcs',min:200,desc:'Economy plastic fork',biz:['fast-food','cloud-kitchen']},
+  {id:53,name:'Toothpick Pack',cat:'cutlery',price:15,unit:'pack',min:10,desc:'Wooden toothpick 200pcs',biz:['restaurant','street-food','caterer']}
+];
+
+const WHATSAPP_NUMBER = '919773239442';
+
+// ========== STATE ==========
+let state = {
+  customer: null,
+  cart: [],
+  orders: [],
+  products: [],
+  selectedBizType: null,
+  adminAuth: false,
+  adminTab: 'products',
+  settings: { adminPassword:'xl2025', sheetUrl:'' },
+  currentView: 'splash',
+  searchQuery: ''
+};
+
+// ========== PERSISTENCE ==========
+function saveState(){
+  const s = {customer:state.customer,orders:state.orders,products:state.products,settings:state.settings};
+  localStorage.setItem('xl_traders_data',JSON.stringify(s));
+}
+function loadState(){
+  try{
+    const d=JSON.parse(localStorage.getItem('xl_traders_data'));
+    if(d){
+      state.customer=d.customer||null;
+      state.orders=d.orders||[];
+      state.products=d.products&&d.products.length?d.products:[...DEFAULT_PRODUCTS];
+      state.settings={...state.settings,...(d.settings||{})};
+    } else {
+      state.products=[...DEFAULT_PRODUCTS];
+    }
+  }catch(e){state.products=[...DEFAULT_PRODUCTS];}
+}
+
+// ========== NAVIGATION ==========
+function navigateTo(view){
+  state.currentView=view;
+  document.querySelectorAll('main > div').forEach(d=>d.classList.add('hidden'));
+  const el=document.getElementById('view-'+view);
+  if(el){el.classList.remove('hidden');el.innerHTML='';}
+  // Hide bottom nav for admin views
+  const nav=document.querySelector('nav');
+  const header=document.querySelector('header');
+  if(view==='admin-login'||view==='admin'){nav.style.display='none';header.style.display='none';}
+  else{nav.style.display='';header.style.display='';}
+  // Update nav active state
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    const isActive=b.dataset.nav===view;
+    b.classList.toggle('text-accent',isActive);
+    b.classList.toggle('text-muted',!isActive);
+  });
+  // Render view
+  switch(view){
+    case 'home': renderHome(); break;
+    case 'categories': renderCategories(); break;
+    case 'products': renderProducts(); break;
+    case 'cart': renderCart(); break;
+    case 'history': renderHistory(); break;
+    case 'admin-login': renderAdminLogin(); break;
+    case 'admin': renderAdmin(); break;
+  }
+  window.scrollTo(0,0);
+}
+
+// ========== UTILITY ==========
+function formatPrice(p){ return '₹'+p.toLocaleString('en-IN'); }
+function getCatInfo(catId){ return CATEGORIES.find(c=>c.id===catId)||{label:catId,icon:'mdi:help',color:'#888'}; }
+function getCartCount(){ return state.cart.reduce((s,i)=>s+i.qty,0); }
+function getCartTotal(){ return state.cart.reduce((s,i)=>s+i.price*i.qty,0); }
+function updateCartBadges(){
+  const c=getCartCount();
+  ['cart-badge','cart-badge-nav'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(c>0){el.classList.remove('hidden');el.textContent=c;}
+    else{el.classList.add('hidden');}
+  });
+}
+function showToast(msg,type='success'){
+  const colors={success:'bg-accent2 text-white',error:'bg-danger text-white',info:'bg-card text-fg border border-border'};
+  const t=document.createElement('div');
+  t.className='toast '+colors[type];
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+function getCustomerSuggestions(){
+  if(!state.customer||!state.customer.bizType) return [];
+  return state.products.filter(p=>p.biz&&p.biz.includes(state.customer.bizType));
+}
+function getLastOrder(){
+  if(!state.orders.length) return null;
+  return state.orders[state.orders.length-1];
+}
+
+// ========== SETUP ==========
+function initSetup(){
+  const grid=document.getElementById('biz-type-grid');
+  grid.innerHTML=BUSINESS_TYPES.map(b=>`
+    <div class="biz-card" data-biz="${b.id}" onclick="selectBizType('${b.id}')">
+      <iconify-icon icon="${b.icon}" width="28" class="text-muted"></iconify-icon>
+      <p class="text-xs font-500 mt-1.5">${b.label}</p>
+    </div>
+  `).join('');
+}
+function selectBizType(id){
+  state.selectedBizType=id;
+  document.querySelectorAll('.biz-card').forEach(c=>{
+    c.classList.toggle('active',c.dataset.biz===id);
+  });
+}
+function saveSetup(){
+  const name=document.getElementById('inp-name').value.trim();
+  const phone=document.getElementById('inp-phone').value.trim();
+  const address=document.getElementById('inp-address').value.trim();
+  const err=document.getElementById('setup-error');
+  if(!name||!phone||!state.selectedBizType){
+    err.textContent='Please fill name, phone and select business type';
+    err.classList.remove('hidden');
+    return;
+  }
+  if(phone.length!==10||!/^\d{10}$/.test(phone)){
+    err.textContent='Enter valid 10-digit phone number';
+    err.classList.remove('hidden');
+    return;
+  }
+  state.customer={name,phone,address,bizType:state.selectedBizType};
+  saveState();
+  document.getElementById('view-setup').classList.add('hidden');
+  document.getElementById('app-shell').style.display='flex';
+  navigateTo('home');
+}
+
+// ========== HOME ==========
+function renderHome(){
+  const el=document.getElementById('view-home');
+  const suggestions=getCustomerSuggestions().slice(0,8);
+  const lastOrder=getLastOrder();
+  const hour=new Date().getHours();
+  const greeting=hour<12?'Good Morning':hour<17?'Good Afternoon':'Good Evening';
+
+  el.innerHTML=`
+    <div class="px-4 pt-4 fade-in">
+      <!-- Greeting -->
+      <div class="mb-5">
+        <p class="text-muted text-sm">${greeting}</p>
+        <h2 class="font-display text-xl font-600 mt-0.5">${state.customer?.name||'Customer'}</h2>
+      </div>
+
+      <!-- Search -->
+      <div class="relative mb-5">
+        <iconify-icon icon="mdi:magnify" width="18" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted"></iconify-icon>
+        <input type="text" id="home-search" placeholder="Search products..." class="!pl-10 !rounded-xl" oninput="handleSearch(this.value)">
+      </div>
+      <div id="search-results" class="hidden mb-5"></div>
+
+      ${!state.searchQuery ? `
+      <!-- Quick Reorder -->
+      ${lastOrder?`
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-display font-600 text-sm">Quick Reorder</h3>
+          <span class="text-[10px] text-muted">${lastOrder.items.length} items · ${formatPrice(lastOrder.total)}</span>
+        </div>
+        <div class="bg-surface border border-border rounded-2xl p-4">
+          <div class="flex flex-wrap gap-1.5 mb-3">
+            ${lastOrder.items.slice(0,4).map(i=>`<span class="text-[10px] bg-card px-2 py-1 rounded-lg text-muted">${i.name} ×${i.qty}</span>`).join('')}
+            ${lastOrder.items.length>4?`<span class="text-[10px] text-accent">+${lastOrder.items.length-4} more</span>`:''}
+          </div>
+          <button onclick="reorderLast()" class="w-full bg-accent2/15 text-accent2 text-xs font-600 py-2.5 rounded-xl hover:bg-accent2/25 transition-colors">
+            <iconify-icon icon="mdi:replay" width="14" class="mr-1"></iconify-icon>
+            Reorder All Items
+          </button>
+        </div>
+      </div>`:''}
+
+      <!-- Smart Suggestions -->
+      ${suggestions.length?`
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-display font-600 text-sm">Smart Picks for You</h3>
+          <span class="text-[10px] text-accent uppercase tracking-wider">${BUSINESS_TYPES.find(b=>b.id===state.customer?.bizType)?.label||''}</span>
+        </div>
+        <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+          ${suggestions.map(p=>{
+            const cat=getCatInfo(p.cat);
+            return `
+            <div class="flex-shrink-0 w-36 bg-card border border-border rounded-2xl p-3 cursor-pointer hover:border-accent/30 transition-colors" onclick="addToCartQuick(${p.id})">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-2" style="background:${cat.color}15">
+                <iconify-icon icon="${cat.icon}" width="20" style="color:${cat.color}"></iconify-icon>
+              </div>
+              <p class="text-xs font-500 leading-tight mb-1 line-clamp-2">${p.name}</p>
+              <div class="flex items-baseline gap-1">
+                <span class="text-sm font-600 text-accent">${formatPrice(p.price)}</span>
+                <span class="text-[9px] text-muted">/${p.unit}</span>
+              </div>
+              <p class="text-[9px] text-muted mt-1">Min: ${p.min} ${p.unit}</p>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`:''}
+
+      <!-- Categories Grid -->
+      <div class="mb-6">
+        <h3 class="font-display font-600 text-sm mb-3">Shop by Category</h3>
+        <div class="grid grid-cols-2 gap-3">
+          ${CATEGORIES.map(c=>{
+            const count=state.products.filter(p=>p.cat===c.id).length;
+            return `
+            <div class="cat-card" onclick="openCategory('${c.id}')">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-2" style="background:${c.color}15">
+                <iconify-icon icon="${c.icon}" width="24" style="color:${c.color}"></iconify-icon>
+              </div>
+              <p class="text-xs font-600">${c.label}</p>
+              <p class="text-[10px] text-muted mt-0.5">${count} items</p>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- All Products Quick View -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-display font-600 text-sm">Popular Products</h3>
+        </div>
+        <div class="space-y-2">
+          ${state.products.slice(0,10).map(p=>{
+            const cat=getCatInfo(p.cat);
+            const inCart=state.cart.find(c=>c.id===p.id);
+            return `
+            <div class="flex items-center gap-3 bg-card border border-border rounded-xl p-3 cursor-pointer hover:border-accent/20 transition-colors" onclick="addToCartQuick(${p.id})">
+              <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center" style="background:${cat.color}15">
+                <iconify-icon icon="${cat.icon}" width="18" style="color:${cat.color}"></iconify-icon>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-xs font-500 truncate">${p.name}</p>
+                <p class="text-[10px] text-muted">${cat.label}</p>
+              </div>
+              <div class="text-right flex-shrink-0">
+                <p class="text-xs font-600 text-accent">${formatPrice(p.price)}</p>
+                ${inCart?`<p class="text-[9px] text-accent2">In cart: ${inCart.qty}</p>`:''}
+              </div>
+              <iconify-icon icon="mdi:plus-circle" width="22" class="text-muted flex-shrink-0"></iconify-icon>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+      ` : ''}
+      <!-- Footer -->
+      <div class="text-center py-6 border-t border-border mt-4">
+        <p class="text-[10px] text-muted/50">XL Traders · Pandesara, Surat</p>
+        <p class="text-[10px] text-muted/50">+91 97732 39442</p>
+      </div>
+    </div>
+  `;
+}
+
+function handleSearch(q){
+  state.searchQuery=q.toLowerCase();
+  const resultsEl=document.getElementById('search-results');
+  if(!q.trim()){resultsEl.classList.add('hidden');renderHome();return;}
+  resultsEl.classList.remove('hidden');
+  const results=state.products.filter(p=>p.name.toLowerCase().includes(state.searchQuery)||p.cat.toLowerCase().includes(state.searchQuery));
+  resultsEl.innerHTML=results.length?`
+    <p class="text-xs text-muted mb-2">${results.length} results found</p>
+    <div class="space-y-2">
+      ${results.map(p=>{
+        const cat=getCatInfo(p.cat);
+        return `
+        <div class="flex items-center gap-3 bg-card border border-border rounded-xl p-3 cursor-pointer" onclick="addToCartQuick(${p.id})">
+          <div class="w-9 h-9 rounded-lg flex-shrink-0 flex items-center justify-center" style="background:${cat.color}15">
+            <iconify-icon icon="${cat.icon}" width="16" style="color:${cat.color}"></iconify-icon>
+          </div>
+          <div class="flex-1 min-w-0"><p class="text-xs font-500 truncate">${p.name}</p><p class="text-[10px] text-muted">${cat.label} · Min: ${p.min}</p></div>
+          <div class="text-right"><p class="text-xs font-600 text-accent">${formatPrice(p.price)}</p></div>
+          <iconify-icon icon="mdi:plus-circle" width="20" class="text-muted"></iconify-icon>
+        </div>`;
+      }).join('')}
+    </div>
+  `:`<p class="text-xs text-muted text-center py-4">No products found for "${q}"</p>`;
+}
+
+function addToCartQuick(id){
+  const p=state.products.find(x=>x.id===id);
+  if(!p) return;
+  const existing=state.cart.find(c=>c.id===id);
+  if(existing){existing.qty+=p.min;}
+  else{state.cart.push({id:p.id,name:p.name,price:p.price,unit:p.unit,qty:p.min,min:p.min,cat:p.cat});}
+  updateCartBadges();
+  showToast(`${p.name} added (${p.min} ${p.unit})`);
+  // Re-render current view to update "In cart" indicators
+  if(state.currentView==='home') renderHome();
+}
+
+function reorderLast(){
+  const last=getLastOrder();
+  if(!last) return;
+  state.cart=last.items.map(i=>({...i}));
+  updateCartBadges();
+  showToast(`Reordered ${last.items.length} items`);
+  navigateTo('cart');
+}
+
+// ========== CATEGORIES ==========
+function renderCategories(){
+  const el=document.getElementById('view-categories');
+  el.innerHTML=`
+    <div class="px-4 pt-4 fade-in">
+      <h2 class="font-display text-lg font-600 mb-4">All Categories</h2>
+      <div class="grid grid-cols-2 gap-3">
+        ${CATEGORIES.map(c=>{
+          const count=state.products.filter(p=>p.cat===c.id).length;
+          return `
+          <div class="cat-card" onclick="openCategory('${c.id}')">
+            <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3" style="background:${c.color}15">
+              <iconify-icon icon="${c.icon}" width="28" style="color:${c.color}"></iconify-icon>
+            </div>
+            <p class="text-sm font-600">${c.label}</p>
+            <p class="text-xs text-muted mt-1">${count} products</p>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function openCategory(catId){
+  state.selectedCategory=catId;
+  navigateTo('products');
+}
+
+// ========== PRODUCTS ==========
+function renderProducts(){
+  const el=document.getElementById('view-products');
+  const cat=state.selectedCategory;
+  const catInfo=getCatInfo(cat);
+  const products=state.products.filter(p=>p.cat===cat);
+  el.innerHTML=`
+    <div class="px-4 pt-4 fade-in">
+      <div class="flex items-center gap-3 mb-5">
+        <button onclick="navigateTo('categories')" class="w-9 h-9 rounded-xl bg-card border border-border flex items-center justify-center hover:border-accent/30 transition-colors">
+          <iconify-icon icon="mdi:arrow-left" width="18"></iconify-icon>
+        </button>
+        <div>
+          <h2 class="font-display text-lg font-600">${catInfo.label}</h2>
+          <p class="text-xs text-muted">${products.length} products</p>
+        </div>
+      </div>
+      <div class="space-y-3">
+        ${products.map(p=>{
+          const inCart=state.cart.find(c=>c.id===p.id);
+          return `
+          <div class="product-card p-4" id="pc-${p.id}">
+            <div class="flex items-start gap-3">
+              <div class="w-14 h-14 rounded-xl flex-shrink-0 flex items-center justify-center" style="background:${catInfo.color}15">
+                <iconify-icon icon="${catInfo.icon}" width="28" style="color:${catInfo.color}"></iconify-icon>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-sm font-600">${p.name}</h4>
+                <p class="text-[11px] text-muted mt-0.5">${p.desc||''}</p>
+                <div class="flex items-baseline gap-1 mt-1.5">
+                  <span class="text-base font-700 text-accent">${formatPrice(p.price)}</span>
+                  <span class="text-[10px] text-muted">per ${p.unit}</span>
+                </div>
+                <p class="text-[10px] text-muted/70 mt-0.5">Min order: ${p.min} ${p.unit}</p>
+                ${inCart?`<p class="text-[10px] text-accent2 font-500 mt-1">In cart: ${inCart.qty} ${inCart.unit}</p>`:''}
+              </div>
+            </div>
+            <div class="flex items-center gap-2 mt-3 pt-3 border-t border-border">
+              ${inCart?`
+                <div class="flex items-center gap-2">
+                  <div class="qty-btn bg-surface border border-border text-fg" onclick="changeQty(${p.id},-1)">−</div>
+                  <span class="text-sm font-600 w-12 text-center font-mono">${inCart.qty}</span>
+                  <div class="qty-btn bg-accent/15 text-accent border border-accent/30" onclick="changeQty(${p.id},1)">+</div>
+                </div>
+                <span class="text-xs text-muted ml-auto">${formatPrice(inCart.price*inCart.qty)}</span>
+              `:`
+                <button onclick="addToCartFromList(${p.id})" class="flex-1 bg-accent/10 text-accent text-xs font-600 py-2.5 rounded-xl hover:bg-accent/20 transition-colors">
+                  <iconify-icon icon="mdi:plus" width="14" class="mr-1"></iconify-icon>Add to Cart
+                </button>
+              `}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function addToCartFromList(id){
+  const p=state.products.find(x=>x.id===id);
+  if(!p) return;
+  state.cart.push({id:p.id,name:p.name,price:p.price,unit:p.unit,qty:p.min,min:p.min,cat:p.cat});
+  updateCartBadges();
+  showToast(`${p.name} added`);
+  renderProducts();
+}
+
+function changeQty(id,delta){
+  const item=state.cart.find(c=>c.id===id);
+  if(!item) return;
+  item.qty+=delta;
+  if(item.qty<=0){state.cart=state.cart.filter(c=>c.id!==id);}
+  updateCartBadges();
+  renderProducts();
+}
+
+// ========== CART ==========
+function renderCart(){
+  const el=document.getElementById('view-cart');
+  const items=state.cart;
+  const total=getCartTotal();
+  const count=getCartCount();
+
+  el.innerHTML=`
+    <div class="px-4 pt-4 fade-in">
+      <h2 class="font-display text-lg font-600 mb-1">Your Cart</h2>
+      <p class="text-xs text-muted mb-4">${count} items · ${items.length} products</p>
+      ${items.length===0?`
+        <div class="text-center py-16">
+          <iconify-icon icon="mdi:cart-outline" width="64" class="text-muted/30"></iconify-icon>
+          <p class="text-muted text-sm mt-4">Your cart is empty</p>
+          <button onclick="navigateTo('categories')" class="mt-4 text-accent text-sm font-500">Browse Categories</button>
+        </div>
+      `:`
+        <!-- Grouped by category -->
+        ${[...new Set(items.map(i=>i.cat))].map(cat=>{
+          const catInfo=getCatInfo(cat);
+          const catItems=items.filter(i=>i.cat===cat);
+          const catTotal=catItems.reduce((s,i)=>s+i.price*i.qty,0);
+          return `
+          <div class="mb-4">
+            <div class="flex items-center gap-2 mb-2">
+              <iconify-icon icon="${catInfo.icon}" width="16" style="color:${catInfo.color}"></iconify-icon>
+              <span class="text-xs font-600 uppercase tracking-wider">${catInfo.label}</span>
+              <span class="text-[10px] text-muted ml-auto">${formatPrice(catTotal)}</span>
+            </div>
+            <div class="space-y-2">
+              ${catItems.map(i=>`
+                <div class="bg-card border border-border rounded-xl p-3">
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
+                      <p class="text-xs font-500">${i.name}</p>
+                      <p class="text-[10px] text-muted mt-0.5">${formatPrice(i.price)} × ${i.qty} ${i.unit}</p>
+                    </div>
+                    <button onclick="removeFromCart(${i.id})" class="text-muted hover:text-danger transition-colors p-1">
+                      <iconify-icon icon="mdi:close" width="16"></iconify-icon>
+                    </button>
+                  </div>
+                  <div class="flex items-center justify-between mt-2 pt-2 border-t border-border/50">
+                    <div class="flex items-center gap-2">
+                      <div class="qty-btn bg-surface border border-border text-fg text-sm" onclick="cartChangeQty(${i.id},-1)">−</div>
+                      <span class="text-sm font-600 w-10 text-center font-mono">${i.qty}</span>
+                      <div class="qty-btn bg-accent/15 text-accent border border-accent/30 text-sm" onclick="cartChangeQty(${i.id},1)">+</div>
+                    </div>
+                    <span class="text-sm font-700 text-accent">${formatPrice(i.price*i.qty)}</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>`;
+        }).join('')}
+
+        <!-- Summary -->
+        <div class="bg-surface border border-border rounded-2xl p-4 mt-6 mb-4">
+          <div class="flex justify-between text-sm mb-2">
+            <span class="text-muted">Total Items</span>
+            <span class="font-600">${count}</span>
+          </div>
+          <div class="flex justify-between text-lg font-700 pt-2 border-t border-border">
+            <span>Total Amount</span>
+            <span class="text-accent">${formatPrice(total)}</span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="space-y-2 mb-6">
+          <button onclick="sendWhatsApp()" class="w-full bg-[#25D366] text-white font-600 py-4 rounded-xl text-sm flex items-center justify-center gap-2 hover:bg-[#20bd5a] transition-colors active:scale-[.98]">
+            <iconify-icon icon="mdi:whatsapp" width="22"></iconify-icon>
+            Send Order via WhatsApp
+          </button>
+          <button onclick="clearCart()" class="w-full bg-card border border-border text-muted font-500 py-3 rounded-xl text-xs hover:text-danger hover:border-danger/30 transition-colors">
+            Clear Cart
+          </button>
+        </div>
+      `}
+    </div>
+  `;
+}
+
+function cartChangeQty(id,delta){
+  const item=state.cart.find(c=>c.id===id);
+  if(!item) return;
+  const step=item.min||1;
+  item.qty+=delta*step;
+  if(item.qty<step){state.cart=state.cart.filter(c=>c.id!==id);}
+  updateCartBadges();
+  renderCart();
+}
+function removeFromCart(id){
+  state.cart=state.cart.filter(c=>c.id!==id);
+  updateCartBadges();
+  renderCart();
+  showToast('Item removed','info');
+}
+function clearCart(){
+  state.cart=[];
+  updateCartBadges();
+  renderCart();
+  showToast('Cart cleared','info');
+}
+
+// ========== WHATSAPP ==========
+function sendWhatsApp(){
+  if(!state.cart.length) return;
+  const items=state.cart;
+  const total=getCartTotal();
+  const count=getCartCount();
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  const timeStr=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+  const bizLabel=BUSINESS_TYPES.find(b=>b.id===state.customer?.bizType)?.label||'General';
+
+  let msg=`🛒 *NEW ORDER - XL TRADERS*\n━━━━━━━━━━━━━━━━━\n`;
+  msg+=`👤 ${state.customer?.name||'Customer'}\n`;
+  msg+=`📞 ${state.customer?.phone||''}\n`;
+  msg+=`🏢 ${bizLabel}\n`;
+  if(state.customer?.address) msg+=`📍 ${state.customer.address}\n`;
+  msg+=`📅 ${dateStr} ${timeStr}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━\n\n`;
+
+  [...new Set(items.map(i=>i.cat))].forEach(cat=>{
+    const catInfo=getCatInfo(cat);
+    const catItems=items.filter(i=>i.cat===cat);
+    msg+=`*${catInfo.label.toUpperCase()}*\n`;
+    catItems.forEach(i=>{
+      msg+=`▸ ${i.name} × ${i.qty} ${i.unit} = ${formatPrice(i.price*i.qty)}\n`;
+    });
+    msg+=`\n`;
+  });
+
+  msg+=`━━━━━━━━━━━━━━━━━\n`;
+  msg+=`📦 Total Items: ${count}\n`;
+  msg+=`💰 Total: *${formatPrice(total)}*\n`;
+  msg+=`━━━━━━━━━━━━━━━━━`;
+
+  // Save order
+  const order={
+    id:Date.now(),
+    date:now.toISOString(),
+    items:items.map(i=>({...i})),
+    total,
+    customer:{...state.customer}
+  };
+  state.orders.push(order);
+  state.cart=[];
+  saveState();
+  updateCartBadges();
+
+  // Open WhatsApp
+  const url=`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+  window.open(url,'_blank');
+  showToast('Order sent! Check WhatsApp','success');
+  navigateTo('history');
+}
+
+// ========== HISTORY ==========
+function renderHistory(){
+  const el=document.getElementById('view-history');
+  const orders=[...state.orders].reverse();
+  el.innerHTML=`
+    <div class="px-4 pt-4 fade-in">
+      <h2 class="font-display text-lg font-600 mb-1">Order History</h2>
+      <p class="text-xs text-muted mb-4">${orders.length} orders placed</p>
+      ${orders.length===0?`
+        <div class="text-center py-16">
+          <iconify-icon icon="mdi:clock-outline" width="64" class="text-muted/30"></iconify-icon>
+          <p class="text-muted text-sm mt-4">No orders yet</p>
+          <button onclick="navigateTo('categories')" class="mt-4 text-accent text-sm font-500">Place Your First Order</button>
+        </div>
+      `:`
+        <div class="space-y-3">
+          ${orders.map(o=>{
+            const d=new Date(o.date);
+            const dateStr=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+            const timeStr=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+            const itemCount=o.items.reduce((s,i)=>s+i.qty,0);
+            return `
+            <div class="bg-card border border-border rounded-2xl p-4">
+              <div class="flex items-start justify-between mb-2">
+                <div>
+                  <p class="text-xs font-600">${dateStr} · ${timeStr}</p>
+                  <p class="text-[10px] text-muted mt-0.5">${itemCount} items · ${o.items.length} products</p>
+                </div>
+                <span class="text-sm font-700 text-accent">${formatPrice(o.total)}</span>
+              </div>
+              <div class="flex flex-wrap gap-1 mb-3">
+                ${o.items.slice(0,3).map(i=>`<span class="text-[9px] bg-surface px-2 py-0.5 rounded-md text-muted">${i.name.split(' ').slice(0,2).join(' ')} ×${i.qty}</span>`).join('')}
+                ${o.items.length>3?`<span class="text-[9px] text-accent">+${o.items.length-3} more</span>`:''}
+              </div>
+              <div class="flex gap-2">
+                <button onclick="reorderFromHistory(${o.id})" class="flex-1 bg-accent2/15 text-accent2 text-[11px] font-600 py-2 rounded-lg hover:bg-accent2/25 transition-colors">
+                  <iconify-icon icon="mdi:replay" width="12" class="mr-0.5"></iconify-icon> Reorder
+                </button>
+                <button onclick="viewOrderDetail(${o.id})" class="flex-1 bg-surface border border-border text-muted text-[11px] font-500 py-2 rounded-lg hover:text-fg transition-colors">
+                  View Details
+                </button>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      `}
+      <!-- Clear History -->
+      ${orders.length?`
+      <button onclick="clearHistory()" class="w-full mt-4 mb-6 text-muted/50 text-[10px] hover:text-danger transition-colors py-2">Clear All History</button>
+      `:''}
+    </div>
+  `;
+}
+
+function reorderFromHistory(id){
+  const o=state.orders.find(x=>x.id===id);
+  if(!o) return;
+  state.cart=o.items.map(i=>({...i}));
+  updateCartBadges();
+  showToast(`Reordered ${o.items.length} items`);
+  navigateTo('cart');
+}
+
+function viewOrderDetail(id){
+  const o=state.orders.find(x=>x.id===id);
+  if(!o) return;
+  const d=new Date(o.date);
+  const dateStr=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  const timeStr=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+
+  const html=`
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="bg-card border border-border rounded-t-3xl sm:rounded-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto slide-up">
+        <div class="sticky top-0 bg-card border-b border-border px-5 py-4 flex items-center justify-between rounded-t-3xl">
+          <h3 class="font-display font-600">Order Details</h3>
+          <button onclick="closeModal()" class="text-muted hover:text-fg"><iconify-icon icon="mdi:close" width="20"></iconify-icon></button>
+        </div>
+        <div class="p-5">
+          <div class="space-y-1.5 mb-4 text-xs">
+            <p class="text-muted">Date: <span class="text-fg">${dateStr} ${timeStr}</span></p>
+            <p class="text-muted">Customer: <span class="text-fg">${o.customer?.name||'N/A'}</span></p>
+            <p class="text-muted">Phone: <span class="text-fg">${o.customer?.phone||'N/A'}</span></p>
+          </div>
+          <div class="space-y-2 mb-4">
+            ${o.items.map(i=>{
+              const catInfo=getCatInfo(i.cat);
+              return `
+              <div class="flex items-center justify-between py-2 border-b border-border/50">
+                <div class="flex items-center gap-2">
+                  <iconify-icon icon="${catInfo.icon}" width="14" style="color:${catInfo.color}"></iconify-icon>
+                  <span class="text-xs">${i.name}</span>
+                </div>
+                <div class="text-right">
+                  <span class="text-xs font-600">${i.qty} × ${formatPrice(i.price)}</span>
+                  <span class="text-xs text-accent ml-2">${formatPrice(i.price*i.qty)}</span>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+          <div class="bg-surface rounded-xl p-4 text-center">
+            <p class="text-xs text-muted">Total Amount</p>
+            <p class="text-2xl font-700 text-accent font-display">${formatPrice(o.total)}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('modal-container').innerHTML=html;
+}
+function closeModal(){document.getElementById('modal-container').innerHTML='';}
+function clearHistory(){
+  if(confirm('Clear all order history?')){
+    state.orders=[];
+    saveState();
+    renderHistory();
+    showToast('History cleared','info');
+  }
+}
+
+// ========== ADMIN LOGIN ==========
+function renderAdminLogin(){
+  const el=document.getElementById('view-admin-login');
+  el.innerHTML=`
+    <div class="px-4 pt-16 fade-in max-w-sm mx-auto">
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-accent/10 border border-accent/30 flex items-center justify-center">
+          <iconify-icon icon="mdi:shield-lock" width="32" class="text-accent"></iconify-icon>
+        </div>
+        <h2 class="font-display text-xl font-600">Admin Panel</h2>
+        <p class="text-muted text-xs mt-1">Enter password to access</p>
+      </div>
+      <div class="space-y-4">
+        <input type="password" id="admin-pass" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')adminLogin()">
+        <button onclick="adminLogin()" class="w-full bg-accent text-bg font-600 py-3.5 rounded-xl text-sm">Login</button>
+        <button onclick="navigateTo('home')" class="w-full text-muted text-xs py-2 hover:text-fg transition-colors">Back to Home</button>
+      </div>
+    </div>
+  `;
+  setTimeout(()=>document.getElementById('admin-pass')?.focus(),100);
+}
+function adminLogin(){
+  const pass=document.getElementById('admin-pass').value;
+  if(pass===state.settings.adminPassword){
+    state.adminAuth=true;
+    navigateTo('admin');
+  } else {
+    showToast('Wrong password','error');
+  }
+}
+
+// ========== ADMIN PANEL ==========
+function renderAdmin(){
+  if(!state.adminAuth){navigateTo('admin-login');return;}
+  const el=document.getElementById('view-admin');
+  const tabs=['products','orders','settings'];
+  el.innerHTML=`
+    <div class="fade-in">
+      <!-- Admin Header -->
+      <div class="bg-card border-b border-border px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <iconify-icon icon="mdi:shield-check" width="20" class="text-accent"></iconify-icon>
+          <span class="font-display font-600 text-sm">Admin Panel</span>
+        </div>
+        <button onclick="state.adminAuth=false;navigateTo('home')" class="text-muted text-xs hover:text-fg transition-colors">Exit</button>
+      </div>
+      <!-- Tabs -->
+      <div class="flex border-b border-border bg-surface/50">
+        ${tabs.map(t=>`
+          <button onclick="state.adminTab='${t}';renderAdmin()" class="flex-1 py-3 text-xs font-500 text-center transition-colors ${state.adminTab===t?'text-accent border-b-2 border-accent':'text-muted hover:text-fg'}">
+            ${t.charAt(0).toUpperCase()+t.slice(1)}
+          </button>
+        `).join('')}
+      </div>
+      <!-- Tab Content -->
+      <div id="admin-content" class="p-4"></div>
+    </div>
+  `;
+  renderAdminContent();
+}
+
+function renderAdminContent(){
+  const el=document.getElementById('admin-content');
+  if(!el) return;
+  switch(state.adminTab){
+    case 'products': renderAdminProducts(el); break;
+    case 'orders': renderAdminOrders(el); break;
+    case 'settings': renderAdminSettings(el); break;
+  }
+}
+
+function renderAdminProducts(el){
+  el.innerHTML=`
+    <div class="flex items-center justify-between mb-4">
+      <span class="text-sm font-600">${state.products.length} Products</span>
+      <button onclick="showAddProduct()" class="bg-accent text-bg text-xs font-600 px-4 py-2 rounded-lg hover:bg-accent/90 transition-colors">
+        <iconify-icon icon="mdi:plus" width="14" class="mr-0.5"></iconify-icon> Add Product
+      </button>
+    </div>
+    <!-- Filter by category -->
+    <select id="admin-cat-filter" onchange="filterAdminProducts()" class="mb-3 text-xs">
+      <option value="all">All Categories</option>
+      ${CATEGORIES.map(c=>`<option value="${c.id}">${c.label}</option>`).join('')}
+    </select>
+    <div id="admin-product-list" class="space-y-2"></div>
+  `;
+  filterAdminProducts();
+}
+
+function filterAdminProducts(){
+  const filter=document.getElementById('admin-cat-filter')?.value||'all';
+  const list=filter==='all'?state.products:state.products.filter(p=>p.cat===filter);
+  const el=document.getElementById('admin-product-list');
+  if(!el) return;
+  el.innerHTML=list.map(p=>{
+    const cat=getCatInfo(p.cat);
+    return `
+    <div class="bg-surface border border-border rounded-xl p-3 flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg flex-shrink-0 flex items-center justify-center" style="background:${cat.color}15">
+        <iconify-icon icon="${cat.icon}" width="16" style="color:${cat.color}"></iconify-icon>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-xs font-500 truncate">${p.name}</p>
+        <p class="text-[10px] text-muted">${cat.label} · Min: ${p.min}</p>
+      </div>
+      <span class="text-xs font-600 text-accent flex-shrink-0">${formatPrice(p.price)}</span>
+      <div class="flex gap-1 flex-shrink-0">
+        <button onclick="showEditProduct(${p.id})" class="w-7 h-7 rounded-lg bg-card border border-border flex items-center justify-center hover:border-accent/30 transition-colors">
+          <iconify-icon icon="mdi:pencil" width="14" class="text-muted"></iconify-icon>
+        </button>
+        <button onclick="deleteProduct(${p.id})" class="w-7 h-7 rounded-lg bg-card border border-border flex items-center justify-center hover:border-danger/30 transition-colors">
+          <iconify-icon icon="mdi:delete" width="14" class="text-muted"></iconify-icon>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showAddProduct(){
+  showProductForm(null);
+}
+function showEditProduct(id){
+  const p=state.products.find(x=>x.id===id);
+  if(p) showProductForm(p);
+}
+
+function showProductForm(product){
+  const isEdit=!!product;
+  const html=`
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="bg-card border border-border rounded-t-3xl sm:rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto slide-up">
+        <div class="sticky top-0 bg-card border-b border-border px-5 py-4 flex items-center justify-between rounded-t-3xl">
+          <h3 class="font-display font-600">${isEdit?'Edit':'Add'} Product</h3>
+          <button onclick="closeModal()" class="text-muted hover:text-fg"><iconify-icon icon="mdi:close" width="20"></iconify-icon></button>
+        </div>
+        <div class="p-5 space-y-3">
+          <div>
+            <label class="text-[10px] text-muted uppercase tracking-wider mb-1 block">Product Name</label>
+            <input type="text" id="pf-name" value="${isEdit?product.name:''}" placeholder="e.g. Paper Cup 200ml">
+          </div>
+          <div>
+            <label class="text-[10px] text-muted uppercase tracking-wider mb-1 block">Category</label>
+            <select id="pf-cat">
+              ${CATEGORIES.map(c=>`<option value="${c.id}" ${isEdit&&product.cat===c.id?'selected':''}>${c.label}</option>`).join('')}
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-[10px] text-muted uppercase tracking-wider mb-1 block">Price (₹)</label>
+              <input type="number" id="pf-price" value="${isEdit?product.price:''}" placeholder="0.00" step="0.01">
+            </div>
+            <div>
+              <label class="text-[10px] text-muted uppercase tracking-wider mb-1 block">Min Order Qty</label>
+              <input type="number" id="pf-min" value="${isEdit?product.min:'100'}" placeholder="100">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-[10px] text-muted uppercase tracking-wider mb-1 block">Unit</label>
+              <select id="pf-unit">
+                <option value="pcs" ${isEdit&&product.unit==='pcs'?'selected':''}>Pieces (pcs)</option>
+                <option value="kg" ${isEdit&&product.unit==='kg'?'selected':''}>Kilogram (kg)</option>
+                <option value="roll" ${isEdit&&product.unit==='roll'?'selected':''}>Roll</option>
+                <option value="pack" ${isEdit&&product.unit==='pack'?'selected':''}>Pack</option>
+                <option value="box" ${isEdit&&product.unit==='box'?'selected':''}>Box</option>
+                <option value="set" ${isEdit&&product.unit==='set'?'selected':''}>Set</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] text-muted uppercase tracking-wider mb-1 block">Business Types</label>
+              <div class="flex flex-wrap gap-1 mt-1">
+                ${BUSINESS_TYPES.map(b=>`
+                  <label class="flex items-center gap-1 text-[9px] text-muted cursor-pointer">
+                    <input type="checkbox" class="pf-biz" value="${b.id}" ${isEdit&&product.biz&&product.biz.includes(b.id)?'checked':''}>
+                    ${b.label.split(' ')[0]}
+                  </label>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+          <div>
+            <label class="text-[10px] text-muted uppercase tracking-wider mb-1 block">Description</label>
+            <input type="text" id="pf-desc" value="${isEdit?(product.desc||''):''}" placeholder="Short description">
+          </div>
+          <button onclick="saveProductForm(${isEdit?product.id:'null'})" class="w-full bg-accent text-bg font-600 py-3 rounded-xl text-sm mt-2">
+            ${isEdit?'Update Product':'Add Product'}
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('modal-container').innerHTML=html;
+}
+
+function saveProductForm(editId){
+  const name=document.getElementById('pf-name').value.trim();
+  const cat=document.getElementById('pf-cat').value;
+  const price=parseFloat(document.getElementById('pf-price').value);
+  const min=parseInt(document.getElementById('pf-min').value)||100;
+  const unit=document.getElementById('pf-unit').value;
+  const desc=document.getElementById('pf-desc').value.trim();
+  const biz=[...document.querySelectorAll('.pf-biz:checked')].map(c=>c.value);
+
+  if(!name||!price||isNaN(price)){
+    showToast('Fill name and price','error');
+    return;
+  }
+
+  if(editId){
+    const idx=state.products.findIndex(p=>p.id===editId);
+    if(idx>=0){
+      state.products[idx]={...state.products[idx],name,cat,price,min,unit,desc,biz};
+    }
+    showToast('Product updated');
+  } else {
+    const newId=state.products.length?Math.max(...state.products.map(p=>p.id))+1:1;
+    state.products.push({id:newId,name,cat,price,min,unit,desc,biz});
+    showToast('Product added');
+  }
+  saveState();
+  closeModal();
+  renderAdminContent();
+}
+
+function deleteProduct(id){
+  if(!confirm('Delete this product?')) return;
+  state.products=state.products.filter(p=>p.id!==id);
+  saveState();
+  renderAdminContent();
+  showToast('Product deleted','info');
+}
+
+function renderAdminOrders(el){
+  const orders=[...state.orders].reverse();
+  el.innerHTML=`
+    <div class="mb-4">
+      <span class="text-sm font-600">${orders.length} Orders</span>
+    </div>
+    ${orders.length===0?`<p class="text-muted text-sm text-center py-10">No orders yet</p>`:`
+      <div class="space-y-3">
+        ${orders.map(o=>{
+          const d=new Date(o.date);
+          const dateStr=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+          return `
+          <div class="bg-surface border border-border rounded-xl p-3">
+            <div class="flex items-start justify-between mb-1">
+              <div>
+                <p class="text-xs font-600">${o.customer?.name||'Customer'} · ${o.customer?.phone||''}</p>
+                <p class="text-[10px] text-muted">${dateStr} · ${o.items.length} products</p>
+              </div>
+              <span class="text-sm font-700 text-accent">${formatPrice(o.total)}</span>
+            </div>
+            <div class="flex flex-wrap gap-1 mt-1">
+              ${o.items.slice(0,5).map(i=>`<span class="text-[9px] bg-card px-1.5 py-0.5 rounded text-muted">${i.name.split(' ').slice(0,2).join(' ')}×${i.qty}</span>`).join('')}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    `}
+    ${orders.length?`<button onclick="exportOrdersCSV()" class="w-full mt-4 bg-card border border-border text-muted text-xs font-500 py-2.5 rounded-xl hover:text-fg transition-colors">
+      <iconify-icon icon="mdi:download" width="14" class="mr-1"></iconify-icon>Export Orders CSV
+    </button>`:''}
+  `;
+}
+
+function exportOrdersCSV(){
+  if(!state.orders.length){showToast('No orders','error');return;}
+  let csv='Date,Customer,Phone,Business Type,Items,Total\n';
+  state.orders.forEach(o=>{
+    const d=new Date(o.date).toLocaleDateString('en-IN');
+    const items=o.items.map(i=>`${i.name} x${i.qty}`).join('; ');
+    const biz=BUSINESS_TYPES.find(b=>b.id===o.customer?.bizType)?.label||'';
+    csv+=`"${d}","${o.customer?.name||''}","${o.customer?.phone||''}","${biz}","${items}","${o.total}"\n`;
+  });
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`xl_traders_orders_${Date.now()}.csv`;
+  a.click();
+  showToast('CSV downloaded');
+}
+
+function renderAdminSettings(el){
+  el.innerHTML=`
+    <div class="space-y-5">
+      <!-- Google Sheets -->
+      <div class="bg-surface border border-border rounded-2xl p-4">
+        <div class="flex items-center gap-2 mb-3">
+          <iconify-icon icon="mdi:google-spreadsheet" width="20" class="text-accent"></iconify-icon>
+          <h4 class="text-sm font-600">Google Sheets Sync</h4>
+        </div>
+        <p class="text-[10px] text-muted mb-3">Connect your Google Sheet to sync product catalogue. Deploy the Apps Script from the documentation, then paste the URL below.</p>
+        <input type="text" id="set-sheet-url" value="${state.settings.sheetUrl||''}" placeholder="https://script.google.com/macros/s/...">
+        <div class="flex gap-2 mt-3">
+          <button onclick="saveSheetUrl()" class="flex-1 bg-accent text-bg text-xs font-600 py-2.5 rounded-xl">Save URL</button>
+          <button onclick="syncFromSheet()" class="flex-1 bg-card border border-border text-xs font-500 py-2.5 rounded-xl hover:text-fg transition-colors">
+            <iconify-icon icon="mdi:download" width="14" class="mr-0.5"></iconify-icon> Pull Products
+          </button>
+        </div>
+        <button onclick="syncToSheet()" class="w-full mt-2 bg-card border border-border text-xs font-500 py-2.5 rounded-xl hover:text-fg transition-colors">
+          <iconify-icon icon="mdi:upload" width="14" class="mr-0.5"></iconify-icon> Push Products to Sheet
+        </button>
+        ${state.settings.lastSync?`<p class="text-[9px] text-muted mt-2">Last sync: ${new Date(state.settings.lastSync).toLocaleString('en-IN')}</p>`:''}
+      </div>
+
+      <!-- Password -->
+      <div class="bg-surface border border-border rounded-2xl p-4">
+        <div class="flex items-center gap-2 mb-3">
+          <iconify-icon icon="mdi:lock" width="20" class="text-accent"></iconify-icon>
+          <h4 class="text-sm font-600">Admin Password</h4>
+        </div>
+        <input type="password" id="set-new-pass" placeholder="New password">
+        <button onclick="changePassword()" class="w-full mt-2 bg-card border border-border text-xs font-500 py-2.5 rounded-xl hover:text-fg transition-colors">Change Password</button>
+      </div>
+
+      <!-- Data Management -->
+      <div class="bg-surface border border-border rounded-2xl p-4">
+        <div class="flex items-center gap-2 mb-3">
+          <iconify-icon icon="mdi:database" width="20" class="text-accent"></iconify-icon>
+          <h4 class="text-sm font-600">Data Management</h4>
+        </div>
+        <div class="space-y-2">
+          <button onclick="exportAllData()" class="w-full bg-card border border-border text-xs font-500 py-2.5 rounded-xl hover:text-fg transition-colors">
+            <iconify-icon icon="mdi:download" width="14" class="mr-0.5"></iconify-icon> Export All Data (JSON)
+          </button>
+          <div>
+            <label class="w-full bg-card border border-border text-xs font-500 py-2.5 rounded-xl hover:text-fg transition-colors flex items-center justify-center cursor-pointer">
+              <iconify-icon icon="mdi:upload" width="14" class="mr-0.5"></iconify-icon> Import Data (JSON)
+              <input type="file" accept=".json" onchange="importData(event)">
+            </label>
+          </div>
+          <button onclick="resetAllData()" class="w-full bg-danger/10 border border-danger/20 text-danger text-xs font-500 py-2.5 rounded-xl hover:bg-danger/20 transition-colors">
+            <iconify-icon icon="mdi:delete-alert" width="14" class="mr-0.5"></iconify-icon> Reset All Data
+          </button>
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="bg-surface border border-border rounded-2xl p-4">
+        <h4 class="text-sm font-600 mb-2">System Info</h4>
+        <div class="space-y-1 text-[10px] text-muted">
+          <p>Products: ${state.products.length}</p>
+          <p>Orders: ${state.orders.length}</p>
+          <p>Customers: ${[...new Set(state.orders.map(o=>o.customer?.phone))].length}</p>
+          <p>Storage: ~${(JSON.stringify(localStorage).length/1024).toFixed(1)} KB</p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function saveSheetUrl(){
+  state.settings.sheetUrl=document.getElementById('set-sheet-url').value.trim();
+  saveState();
+  showToast('Sheet URL saved');
+}
+function changePassword(){
+  const p=document.getElementById('set-new-pass').value;
+  if(p.length<4){showToast('Min 4 characters','error');return;}
+  state.settings.adminPassword=p;
+  saveState();
+  showToast('Password changed');
+}
+function exportAllData(){
+  const data={products:state.products,orders:state.orders,settings:{...state.settings,adminPassword:'***'},customer:state.customer};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`xl_traders_backup_${Date.now()}.json`;
+  a.click();
+  showToast('Data exported');
+}
+function importData(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const data=JSON.parse(ev.target.result);
+      if(data.products) state.products=data.products;
+      if(data.orders) state.orders=data.orders;
+      if(data.settings&&data.settings.adminPassword!=='***') state.settings={...state.settings,...data.settings};
+      saveState();
+      showToast('Data imported');
+      renderAdminContent();
+    }catch(err){showToast('Invalid file','error');}
+  };
+  reader.readAsText(file);
+}
+function resetAllData(){
+  if(!confirm('This will delete ALL data. Are you sure?')) return;
+  if(!confirm('FINAL WARNING: All products, orders, and settings will be reset.')) return;
+  localStorage.removeItem('xl_traders_data');
+  state.products=[...DEFAULT_PRODUCTS];
+  state.orders=[];
+  state.settings={adminPassword:'xl2025',sheetUrl:''};
+  state.cart=[];
+  saveState();
+  showToast('Data reset','info');
+  renderAdminContent();
+}
+
+// ========== GOOGLE SHEETS SYNC ==========
+async function syncFromSheet(){
+  const url=state.settings.sheetUrl;
+  if(!url){showToast('Set Sheet URL first','error');return;}
+  showToast('Syncing from sheet...','info');
+  try{
+    const res=await fetch(url+'?action=products');
+    const data=await res.json();
+    if(Array.isArray(data)&&data.length){
+      // Map sheet columns to our format
+      state.products=data.map((row,i)=>({
+        id:row.id||i+1,
+        name:row.name||row.Name||row.product||'',
+        cat:(row.cat||row.category||row.Category||'').toLowerCase().replace(/\s+/g,'-'),
+        price:parseFloat(row.price||row.Price||0),
+        unit:row.unit||row.Unit||'pcs',
+        min:parseInt(row.min||row.minOrder||row.MinOrder||100),
+        desc:row.desc||row.description||row.Description||'',
+        biz:(row.biz||row.businessTypes||'').split(',').map(b=>b.trim()).filter(Boolean)
+      })).filter(p=>p.name);
+      state.settings.lastSync=Date.now();
+      saveState();
+      showToast(`Synced ${state.products.length} products`);
+      renderAdminContent();
+    } else {
+      showToast('No data found in sheet','error');
+    }
+  }catch(err){
+    showToast('Sync failed: '+err.message,'error');
+  }
+}
+
+async function syncToSheet(){
+  const url=state.settings.sheetUrl;
+  if(!url){showToast('Set Sheet URL first','error');return;}
+  showToast('Pushing to sheet...','info');
+  try{
+    const res=await fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'sync',products:state.products})
+    });
+    const data=await res.json();
+    state.settings.lastSync=Date.now();
+    saveState();
+    showToast('Products pushed to sheet');
+    renderAdminContent();
+  }catch(err){
+    showToast('Push failed: '+err.message,'error');
+  }
+}
+
+// ========== INIT ==========
+function init(){
+  loadState();
+
+  // Splash -> Setup or Home
+  setTimeout(()=>{
+    document.getElementById('view-splash').classList.add('hidden');
+    if(state.customer){
+      document.getElementById('app-shell').style.display='flex';
+      navigateTo('home');
+    } else {
+      document.getElementById('view-setup').classList.remove('hidden');
+      initSetup();
+    }
+  },2000);
+
+  updateCartBadges();
+}
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
