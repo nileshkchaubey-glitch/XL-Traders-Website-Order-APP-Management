@@ -1,0 +1,2800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0d5c4a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="XL Traders">
+<meta name="description" content="XL Traders — Order packaging & disposables via WhatsApp. Surat.">
+<title>XL Traders — Order Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   DESIGN SYSTEM  — XL Traders v2
+   Aesthetic: Bold Indian B2B — trustworthy, energetic, scalable
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  /* Teal brand */
+  --t:    #0d5c4a; --t1: #0f7a61; --t2: #1aad86;
+  --tp:   #e0f5ef; --tb: #f0f9f6; --ts: rgba(13,92,74,.08);
+
+  /* Amber accent */
+  --a:    #f5a623; --ad: #d4881a; --ap: #fff8ec;
+
+  /* WhatsApp */
+  --wa:   #25d366; --wad: #1da851;
+
+  /* Semantic */
+  --red:  #e53935; --redp: #fff5f5;
+  --blue: #1976d2; --bluep:#e3f2fd;
+  --ok:   #43a047;
+
+  /* Neutrals */
+  --n0:#fff; --n50:#f9fafb; --n100:#f3f4f6; --n200:#e5e7eb;
+  --n300:#d1d5db; --n400:#9ca3af; --n500:#6b7280;
+  --n600:#4b5563; --n700:#374151; --n800:#1f2937; --n900:#111827;
+
+  /* Fonts */
+  --ff: 'Sora',sans-serif;
+  --fb: 'DM Sans',sans-serif;
+
+  /* Radius */
+  --r2:8px; --r3:12px; --r4:16px; --r5:20px; --r6:28px;
+
+  /* Shadow */
+  --s1:0 1px 3px rgba(0,0,0,.08);
+  --s2:0 4px 14px rgba(0,0,0,.10);
+  --s3:0 8px 32px rgba(0,0,0,.13);
+  --s4:0 20px 60px rgba(0,0,0,.18);
+}
+
+/* ─── RESET ─────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--fb); background:var(--tb);
+  color:var(--n800); min-height:100dvh;
+  overflow-x:hidden; font-size:15px;
+  -webkit-tap-highlight-color:transparent;
+}
+input,select,textarea,button{font-family:inherit}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--n300);border-radius:2px}
+
+/* ─── PAGES ──────────────────────────────── */
+.page{display:none;min-height:100dvh}
+.page.active{display:block}
+
+/* ─── TOAST ──────────────────────────────── */
+#toast{
+  position:fixed;bottom:88px;left:50%;
+  transform:translateX(-50%) translateY(12px);
+  background:var(--n900);color:#fff;
+  padding:10px 22px;border-radius:50px;
+  font-size:13.5px;font-weight:500;
+  z-index:9999;opacity:0;transition:.25s;
+  white-space:nowrap;box-shadow:var(--s3);
+  pointer-events:none;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ═══════════════════════════════════════════
+   PAGE 0 — CUSTOMER TYPE SELECTION
+   ═══════════════════════════════════════════ */
+#page-select{
+  background:linear-gradient(160deg,var(--t) 0%,var(--t1) 55%,#073d2c 100%);
+  min-height:100dvh; padding-bottom:40px;
+}
+.sp-header{padding:36px 20px 24px;text-align:center}
+.sp-logo{
+  display:inline-flex;align-items:center;gap:13px;
+  margin-bottom:20px;
+}
+.sp-logo-icon{
+  width:54px;height:54px;background:var(--a);
+  border-radius:16px;display:flex;align-items:center;
+  justify-content:center;font-size:28px;flex-shrink:0;
+  box-shadow:0 4px 18px rgba(245,166,35,.45);
+}
+.sp-logo-text .name{
+  font-family:var(--ff);font-size:27px;font-weight:800;
+  color:#fff;letter-spacing:-.5px;line-height:1;text-align:left;
+}
+.sp-logo-text .tag{
+  font-size:11px;color:rgba(255,255,255,.65);
+  font-weight:500;letter-spacing:.6px;margin-top:3px;
+}
+.sp-title{
+  font-family:var(--ff);font-size:21px;font-weight:700;
+  color:#fff;margin-bottom:7px;
+}
+.sp-sub{font-size:14px;color:rgba(255,255,255,.65);line-height:1.6}
+
+/* Customer-type grid */
+.ct-grid{padding:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.ct-card{
+  background:rgba(255,255,255,.1);
+  backdrop-filter:blur(10px);
+  border:1.5px solid rgba(255,255,255,.18);
+  border-radius:var(--r5);padding:18px 12px;
+  text-align:center;cursor:pointer;
+  transition:.2s; position:relative;overflow:hidden;
+}
+.ct-card:active{transform:scale(.97)}
+.ct-card.sel{
+  background:var(--a);border-color:var(--a);
+  box-shadow:0 4px 20px rgba(245,166,35,.45);
+}
+.ct-icon{font-size:36px;display:block;margin-bottom:9px}
+.ct-name{font-family:var(--ff);font-size:13px;font-weight:700;color:#fff;line-height:1.3}
+.ct-card.sel .ct-name{color:var(--n900)}
+.ct-desc{font-size:11px;color:rgba(255,255,255,.6);margin-top:4px;line-height:1.4}
+.ct-card.sel .ct-desc{color:rgba(0,0,0,.5)}
+
+.ct-btn{
+  display:none;width:calc(100% - 32px);margin:18px 16px 0;
+  background:var(--a);color:var(--n900);
+  font-family:var(--ff);font-size:16px;font-weight:700;
+  padding:17px;border:none;border-radius:var(--r5);
+  cursor:pointer;box-shadow:0 4px 20px rgba(245,166,35,.5);
+  transition:.15s;letter-spacing:.3px;
+}
+.ct-btn.show{display:block;animation:slideUp .3s ease}
+.ct-btn:active{transform:scale(.98)}
+
+.usps{
+  display:flex;margin:22px 16px 0;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:var(--r3);overflow:hidden;
+}
+.usp{
+  flex:1;padding:11px 6px;text-align:center;
+  border-right:1px solid rgba(255,255,255,.1);
+}
+.usp:last-child{border-right:none}
+.usp-ic{font-size:18px;display:block}
+.usp-tx{font-size:10.5px;color:rgba(255,255,255,.7);margin-top:2px;font-weight:500}
+
+/* ═══════════════════════════════════════════
+   PAGE 1 — PRODUCT CATALOG
+   ═══════════════════════════════════════════ */
+#page-catalog{background:var(--tb);padding-bottom:140px}
+
+/* Sticky header */
+.cat-hdr{
+  position:sticky;top:0;z-index:100;
+  background:var(--t);box-shadow:var(--s2);
+}
+.cat-hdr-top{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  padding:12px 16px 8px;gap:10px;
+}
+.hdr-back{
+  background:rgba(255,255,255,.14);border:none;
+  border-radius:10px;width:38px;height:38px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:#fff;font-size:18px;flex-shrink:0;
+}
+.hdr-title-wrap{flex:1;min-width:0}
+.hdr-title{
+  font-family:var(--ff);font-size:15px;font-weight:700;
+  color:#fff;line-height:1.2;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;
+}
+.hdr-sub{font-size:11px;color:rgba(255,255,255,.6)}
+
+/* ── NEW: Price-tier badge ── */
+.price-tier-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(245,166,35,.22);border:1px solid rgba(245,166,35,.4);
+  color:#ffe9a0;border-radius:50px;
+  padding:3px 9px;font-size:10.5px;font-weight:600;
+  margin-top:3px;
+}
+
+.hdr-cart-btn{
+  position:relative;background:var(--a);border:none;
+  border-radius:12px;width:44px;height:44px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:20px;flex-shrink:0;
+  box-shadow:0 2px 10px rgba(245,166,35,.4);transition:.15s;
+}
+.hdr-cart-btn:active{transform:scale(.92)}
+.cart-badge{
+  display:none;position:absolute;top:-5px;right:-5px;
+  background:var(--red);color:#fff;
+  font-family:var(--ff);font-size:10px;font-weight:700;
+  min-width:18px;height:18px;border-radius:9px;
+  align-items:center;justify-content:center;
+  padding:0 4px;border:2px solid var(--t);
+}
+.cart-badge.show{display:flex}
+
+/* Search */
+.search-wrap{padding:0 16px 10px}
+.search-box{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.13);
+  border-radius:var(--r2);padding:9px 14px;
+  border:1px solid rgba(255,255,255,.18);
+}
+.search-box input{
+  flex:1;background:none;border:none;outline:none;
+  color:#fff;font-size:14px;
+}
+.search-box input::placeholder{color:rgba(255,255,255,.45)}
+.search-ic{color:rgba(255,255,255,.55);font-size:16px;flex-shrink:0}
+.search-clr{
+  background:none;border:none;cursor:pointer;
+  color:rgba(255,255,255,.55);font-size:15px;display:none;
+}
+.search-clr.show{display:block}
+
+/* Category tabs */
+.cat-tabs{
+  display:flex;overflow-x:auto;padding:0 16px 11px;
+  gap:8px;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+.cat-tabs::-webkit-scrollbar{display:none}
+.cat-tab{
+  flex-shrink:0;padding:6px 15px;border-radius:50px;
+  background:rgba(255,255,255,.11);
+  border:1.5px solid rgba(255,255,255,.18);
+  color:rgba(255,255,255,.8);font-size:13px;font-weight:600;
+  cursor:pointer;white-space:nowrap;transition:.15s;
+}
+.cat-tab.active{
+  background:var(--a);border-color:var(--a);
+  color:var(--n900);box-shadow:0 2px 10px rgba(245,166,35,.4);
+}
+
+/* Catalog body */
+.cat-body{padding:0 14px}
+
+.sec-title{
+  font-family:var(--ff);font-size:15px;font-weight:700;
+  color:var(--t);margin:18px 0 12px;
+  display:flex;align-items:center;gap:8px;
+}
+.sec-title::after{
+  content:'';flex:1;height:1.5px;
+  background:linear-gradient(to right,var(--tp),transparent);
+  border-radius:2px;
+}
+
+/* Repeat-order banner */
+.repeat-banner{
+  display:none;background:var(--ap);
+  border:1.5px solid var(--a);border-radius:var(--r3);
+  padding:13px 15px;margin-bottom:14px;cursor:pointer;
+}
+.repeat-banner.show{display:block;animation:slideUp .3s ease}
+.repeat-banner:active{transform:scale(.99)}
+.rb-top{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:5px;
+}
+.rb-title{font-family:var(--ff);font-size:13.5px;font-weight:700;color:var(--ad)}
+.rb-btn{
+  background:var(--a);color:var(--n900);
+  border:none;border-radius:7px;padding:4px 12px;
+  font-size:12px;font-weight:700;cursor:pointer;
+}
+.rb-items{font-size:12px;color:var(--n600);line-height:1.5}
+
+/* Products grid — 2 columns */
+.prod-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ── PRODUCT CARD (upgraded) ── */
+.prod-card{
+  background:var(--n0);border-radius:var(--r3);
+  overflow:hidden;box-shadow:var(--s1);
+  border:1px solid var(--n200);
+  transition:box-shadow .2s,transform .15s;
+  position:relative;
+}
+.prod-card:active{transform:scale(.99)}
+
+/* ── NEW: In-cart highlight ── */
+.prod-card.in-cart{
+  border-color:var(--t2);
+  box-shadow:0 0 0 2px rgba(26,173,134,.18);
+}
+
+/* ── NEW: Out-of-stock state ── */
+.prod-card.oos{opacity:.72}
+.oos-overlay{
+  position:absolute;top:0;left:0;right:0;
+  bottom:0;z-index:10;
+  background:rgba(255,255,255,.65);
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;
+}
+.oos-label{
+  background:var(--red);color:#fff;
+  font-family:var(--ff);font-size:11px;font-weight:700;
+  padding:5px 14px;border-radius:50px;letter-spacing:.5px;
+}
+
+/* Product image area */
+.prod-img{
+  width:100%;aspect-ratio:1;
+  background:linear-gradient(135deg,var(--tp) 0%,#e8f5f1 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:54px;position:relative;overflow:hidden;
+}
+/* ── NEW: Real image support ── */
+.prod-img img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;transition:opacity .3s;
+}
+.prod-emoji-bg{
+  position:absolute;inset:0;display:flex;
+  align-items:center;justify-content:center;font-size:54px;
+}
+
+/* Badges */
+.prod-badge{
+  position:absolute;top:7px;left:7px;
+  font-family:var(--ff);font-size:10px;font-weight:700;
+  padding:2px 8px;border-radius:50px;z-index:2;
+}
+.badge-popular{background:var(--red);color:#fff}
+.badge-new{background:var(--t2);color:#fff}
+.badge-sale{background:var(--a);color:var(--n900)}
+
+/* ── NEW: Favorite button ── */
+.fav-btn{
+  position:absolute;top:6px;right:6px;z-index:3;
+  background:rgba(255,255,255,.85);backdrop-filter:blur(4px);
+  border:none;border-radius:50%;width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;cursor:pointer;transition:.15s;
+  box-shadow:0 1px 4px rgba(0,0,0,.12);
+}
+.fav-btn:active{transform:scale(.88)}
+.fav-btn.active{background:rgba(255,235,235,.92)}
+
+/* ── NEW: Low-stock badge ── */
+.stock-strip{
+  display:none;
+  padding:3px 10px;font-size:10.5px;font-weight:600;
+  letter-spacing:.3px;text-align:center;
+}
+.stock-strip.low{display:block;background:#fff3e0;color:#e65100}
+.stock-strip.out{display:none}
+
+.prod-info{padding:9px 10px 11px}
+.prod-name{
+  font-family:var(--ff);font-size:13px;font-weight:700;
+  color:var(--n800);line-height:1.3;margin-bottom:2px;
+}
+.prod-size{font-size:11.5px;color:var(--n500);margin-bottom:7px}
+
+/* ── NEW: Price row with tier indicator ── */
+.prod-price-row{
+  display:flex;align-items:baseline;gap:5px;margin-bottom:2px;
+}
+.prod-price{
+  font-family:var(--ff);font-size:15px;font-weight:800;color:var(--t);
+}
+.prod-price .punit{
+  font-size:10.5px;font-weight:500;color:var(--n400);
+  font-family:var(--fb);
+}
+.prod-orig-price{
+  font-size:11.5px;color:var(--n400);text-decoration:line-through;
+  display:none;
+}
+.prod-orig-price.show{display:inline}
+/* ── NEW: Savings pill ── */
+.savings-pill{
+  display:none;font-size:10px;font-weight:700;
+  background:#e8f5e9;color:var(--ok);
+  padding:1px 6px;border-radius:50px;
+}
+.savings-pill.show{display:inline}
+.prod-moq{font-size:10.5px;color:var(--n400);margin-bottom:7px}
+
+/* Qty controls */
+.qty-ctrl{display:flex;align-items:center;gap:0;width:100%}
+.qty-btn{
+  width:30px;height:30px;background:var(--tp);border:none;
+  border-radius:7px;color:var(--t);font-size:18px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:.12s;line-height:1;
+}
+.qty-btn:active{background:var(--t);color:#fff;transform:scale(.9)}
+.qty-inp{
+  flex:1;text-align:center;border:1px solid var(--n200);
+  border-radius:6px;height:30px;
+  font-family:var(--ff);font-size:15px;font-weight:700;
+  color:var(--n800);background:var(--n50);outline:none;margin:0 5px;
+}
+.qty-inp:focus{border-color:var(--t2);background:#fff}
+
+.add-btn{
+  width:100%;background:var(--t);color:#fff;border:none;
+  border-radius:var(--r2);padding:8px;
+  font-family:var(--ff);font-size:13px;font-weight:700;
+  cursor:pointer;margin-top:7px;transition:.15s;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.add-btn:active{background:var(--t1);transform:scale(.98)}
+.add-btn.added{background:var(--t2)}
+.add-btn.oos-btn{background:var(--n300);color:var(--n500);cursor:not-allowed}
+
+/* No results */
+.no-results{text-align:center;padding:56px 20px;color:var(--n400)}
+.no-results .ic{font-size:46px;margin-bottom:12px}
+.no-results h3{font-size:15px;font-weight:700;color:var(--n600);margin-bottom:5px}
+
+/* Floating cart */
+.fl-cart{
+  display:none;position:fixed;bottom:16px;
+  left:16px;right:16px;z-index:200;
+}
+.fl-cart.show{display:block;animation:slideUp .3s ease}
+.fl-inner{
+  background:var(--t);border-radius:var(--r5);
+  padding:13px 18px;display:flex;align-items:center;
+  justify-content:space-between;box-shadow:var(--s4);
+  cursor:pointer;transition:.15s;
+}
+.fl-inner:active{transform:scale(.99)}
+.fl-left{display:flex;align-items:center;gap:11px}
+.fl-ic{
+  width:42px;height:42px;background:rgba(255,255,255,.13);
+  border-radius:12px;display:flex;align-items:center;
+  justify-content:center;font-size:20px;
+}
+.fl-cnt{
+  font-family:var(--ff);font-size:13px;font-weight:700;
+  color:rgba(255,255,255,.75);
+}
+.fl-tot{
+  font-family:var(--ff);font-size:20px;font-weight:800;
+  color:#fff;line-height:1;
+}
+.fl-go{
+  background:var(--a);color:var(--n900);border:none;
+  border-radius:12px;padding:9px 16px;
+  font-family:var(--ff);font-size:14px;font-weight:700;
+  cursor:pointer;white-space:nowrap;
+}
+
+/* ═══════════════════════════════════════════
+   PAGE 2 — CART / CHECKOUT
+   ═══════════════════════════════════════════ */
+#page-cart{background:var(--tb);min-height:100dvh;padding-bottom:160px}
+.cart-hdr{
+  background:var(--t);padding:13px 16px;
+  display:flex;align-items:center;gap:13px;
+  position:sticky;top:0;z-index:100;box-shadow:var(--s2);
+}
+.cart-hdr-title{
+  font-family:var(--ff);font-size:17px;font-weight:700;
+  color:#fff;flex:1;
+}
+.cart-body{padding:15px}
+
+/* Order form */
+.order-form{
+  background:var(--n0);border-radius:var(--r3);
+  padding:17px;margin-bottom:13px;
+  box-shadow:var(--s1);border:1px solid var(--n200);
+}
+.form-title{
+  font-family:var(--ff);font-size:14px;font-weight:700;
+  color:var(--t);margin-bottom:13px;
+  display:flex;align-items:center;gap:7px;
+}
+.form-field{margin-bottom:11px}
+.form-field label{
+  display:block;font-size:11.5px;font-weight:600;
+  color:var(--n500);margin-bottom:4px;
+  letter-spacing:.3px;text-transform:uppercase;
+}
+.form-field input,.form-field select,.form-field textarea{
+  width:100%;padding:10px 13px;
+  border:1.5px solid var(--n200);border-radius:var(--r2);
+  font-size:15px;color:var(--n800);background:var(--n50);outline:none;
+  transition:.15s;
+}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{
+  border-color:var(--t2);background:#fff;
+}
+.form-field textarea{resize:vertical;min-height:65px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* Cart items */
+.cart-card{
+  background:var(--n0);border-radius:var(--r3);
+  overflow:hidden;box-shadow:var(--s1);
+  border:1px solid var(--n200);margin-bottom:13px;
+}
+.cart-card-hdr{
+  padding:12px 15px;border-bottom:1px solid var(--n100);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.cart-card-title{
+  font-family:var(--ff);font-size:13.5px;font-weight:700;color:var(--n700)
+}
+.clear-btn{
+  background:none;border:none;color:var(--red);
+  font-size:12.5px;font-weight:600;cursor:pointer;
+}
+.cart-item{
+  display:flex;align-items:center;gap:11px;
+  padding:11px 15px;border-bottom:1px solid var(--n100);
+}
+.cart-item:last-child{border-bottom:none}
+.ci-img{
+  width:44px;height:44px;background:var(--tp);
+  border-radius:10px;display:flex;align-items:center;
+  justify-content:center;font-size:22px;flex-shrink:0;
+  overflow:hidden;
+}
+.ci-img img{width:100%;height:100%;object-fit:cover}
+.ci-info{flex:1;min-width:0}
+.ci-name{
+  font-family:var(--ff);font-size:13px;font-weight:700;
+  color:var(--n800);white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;
+}
+.ci-meta{font-size:11.5px;color:var(--n500)}
+/* ── NEW: Per-type price in cart ── */
+.ci-type-price{
+  font-size:10.5px;color:var(--t2);font-weight:600;margin-top:1px;
+}
+.ci-right{text-align:right;flex-shrink:0}
+.ci-price{
+  font-family:var(--ff);font-size:14px;
+  font-weight:700;color:var(--t);
+}
+.ci-sub{font-size:11px;color:var(--n400)}
+.ci-qty{display:flex;align-items:center;gap:5px;margin-top:4px;justify-content:flex-end}
+.ci-qbtn{
+  width:26px;height:26px;background:var(--tp);border:none;
+  border-radius:7px;color:var(--t);font-size:15px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.ci-qbtn:active{background:var(--t);color:#fff}
+.ci-qnum{
+  font-family:var(--ff);font-size:14px;font-weight:700;
+  min-width:22px;text-align:center;color:var(--n800);
+}
+
+/* Cart summary */
+.cart-summary{
+  background:var(--n0);border-radius:var(--r3);
+  padding:17px;box-shadow:var(--s1);
+  border:1px solid var(--n200);margin-bottom:13px;
+}
+.sum-row{
+  display:flex;justify-content:space-between;
+  padding:4px 0;font-size:14px;color:var(--n600);
+}
+/* ── NEW: Savings row in summary ── */
+.sum-row.savings{color:var(--ok);font-weight:600}
+.sum-row.total{
+  font-family:var(--ff);font-size:17px;font-weight:800;
+  color:var(--n900);border-top:1.5px solid var(--n200);
+  padding-top:11px;margin-top:7px;
+}
+.sum-row.total span:last-child{color:var(--t)}
+.sum-note{
+  font-size:12px;color:var(--n500);margin-top:10px;
+  padding:10px;background:var(--tp);border-radius:var(--r2);
+  line-height:1.6;
+}
+
+/* WhatsApp button */
+.wa-btn-wrap{
+  position:fixed;bottom:0;left:0;right:0;
+  padding:14px;background:linear-gradient(to top,var(--tb) 60%,transparent);
+}
+.wa-btn{
+  width:100%;background:var(--wa);color:#fff;border:none;
+  border-radius:var(--r5);padding:18px;
+  font-family:var(--ff);font-size:17px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;
+  justify-content:center;gap:10px;
+  box-shadow:0 6px 24px rgba(37,211,102,.4);transition:.15s;
+}
+.wa-btn:active{transform:scale(.99);background:var(--wad)}
+.wa-btn svg{width:24px;height:24px;flex-shrink:0}
+
+/* Empty cart */
+.empty-cart{text-align:center;padding:60px 22px}
+.empty-cart .ic{font-size:58px;margin-bottom:14px}
+.empty-cart h2{
+  font-family:var(--ff);font-size:19px;font-weight:700;
+  color:var(--n700);margin-bottom:7px;
+}
+.empty-cart p{font-size:14px;color:var(--n500);margin-bottom:22px}
+.empty-cart-btn{
+  background:var(--t);color:#fff;border:none;
+  border-radius:var(--r3);padding:14px 30px;
+  font-family:var(--ff);font-size:15px;font-weight:700;cursor:pointer;
+}
+
+/* ═══════════════════════════════════════════
+   ADMIN PANEL
+   ═══════════════════════════════════════════ */
+#page-admin{background:var(--n50);min-height:100dvh;padding-bottom:40px}
+.adm-hdr{
+  background:var(--n900);padding:13px 16px;
+  display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:100;
+}
+.adm-hdr-title{
+  font-family:var(--ff);font-size:16px;font-weight:700;color:#fff;flex:1;
+}
+.adm-back{
+  background:rgba(255,255,255,.1);border:none;border-radius:10px;
+  width:38px;height:38px;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;color:#fff;font-size:18px;
+}
+
+/* Admin tabs */
+.adm-tabs{
+  display:flex;background:#fff;
+  border-bottom:1px solid var(--n200);
+  overflow-x:auto;scrollbar-width:none;
+}
+.adm-tabs::-webkit-scrollbar{display:none}
+.adm-tab{
+  flex-shrink:0;padding:12px 16px;font-size:13px;font-weight:600;
+  color:var(--n500);cursor:pointer;border-bottom:2.5px solid transparent;
+  white-space:nowrap;transition:.15s;
+}
+.adm-tab.active{color:var(--t);border-bottom-color:var(--t)}
+
+.adm-body{padding:14px}
+.adm-sec{display:none}
+.adm-sec.active{display:block}
+
+.adm-card{
+  background:#fff;border-radius:var(--r3);padding:17px;
+  margin-bottom:13px;box-shadow:var(--s1);
+  border:1px solid var(--n200);
+}
+.adm-card-title{
+  font-family:var(--ff);font-size:13.5px;font-weight:700;
+  color:var(--n700);margin-bottom:13px;
+  padding-bottom:9px;border-bottom:1px solid var(--n100);
+  display:flex;align-items:center;gap:7px;
+}
+.adm-field{margin-bottom:11px}
+.adm-field label{
+  display:block;font-size:11.5px;font-weight:600;
+  color:var(--n500);margin-bottom:4px;
+  text-transform:uppercase;letter-spacing:.3px;
+}
+.adm-field input,.adm-field select,.adm-field textarea{
+  width:100%;padding:9px 12px;border:1.5px solid var(--n200);
+  border-radius:var(--r2);font-size:14px;color:var(--n800);
+  background:#fff;outline:none;
+}
+.adm-field input:focus,.adm-field select:focus,.adm-field textarea:focus{
+  border-color:var(--t);
+}
+.adm-field textarea{resize:vertical}
+.adm-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.adm-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+/* Admin buttons */
+.abtn{
+  padding:9px 18px;border-radius:var(--r2);
+  font-family:var(--ff);font-size:13px;font-weight:700;
+  border:none;cursor:pointer;transition:.15s;
+}
+.abtn:active{transform:scale(.97)}
+.abtn-g{background:var(--t);color:#fff}
+.abtn-r{background:var(--red);color:#fff}
+.abtn-o{background:var(--a);color:var(--n900)}
+.abtn-s{background:var(--n200);color:var(--n700)}
+.abtn-b{background:var(--blue);color:#fff}
+.abtn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+
+/* Admin product row */
+.adm-prod-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 0;border-bottom:1px solid var(--n100);
+}
+.adm-prod-row:last-child{border-bottom:none}
+.adm-prod-img{
+  width:44px;height:44px;background:var(--tp);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;overflow:hidden;
+}
+.adm-prod-img img{width:100%;height:100%;object-fit:cover}
+.adm-prod-info{flex:1;min-width:0}
+.adm-prod-name{
+  font-weight:700;font-size:13px;color:var(--n800);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.adm-prod-meta{font-size:11.5px;color:var(--n500);margin-top:2px}
+.adm-prod-acts{display:flex;gap:5px;flex-shrink:0}
+.adm-edit{
+  padding:4px 9px;border-radius:6px;background:var(--tp);
+  color:var(--t);border:none;font-size:11.5px;font-weight:700;cursor:pointer;
+}
+.adm-del{
+  padding:4px 9px;border-radius:6px;background:var(--redp);
+  color:var(--red);border:none;font-size:11.5px;font-weight:700;cursor:pointer;
+}
+
+/* ── NEW: Per-customer pricing grid ── */
+.price-grid{
+  border:1.5px solid var(--n200);border-radius:var(--r2);overflow:hidden;
+}
+.pg-row{
+  display:flex;align-items:center;
+  padding:9px 12px;border-bottom:1px solid var(--n100);
+}
+.pg-row:last-child{border-bottom:none}
+.pg-row.default{background:var(--tp);font-weight:700}
+.pg-label{flex:1;font-size:13px;color:var(--n700)}
+.pg-label span{font-size:16px;margin-right:6px}
+.pg-inp{
+  width:90px;padding:6px 10px;border:1.5px solid var(--n200);
+  border-radius:7px;font-size:14px;font-family:var(--ff);
+  font-weight:600;color:var(--t);text-align:right;outline:none;
+  background:#fff;
+}
+.pg-inp:focus{border-color:var(--t)}
+.pg-inp.is-diff{
+  border-color:var(--a);background:var(--ap);color:var(--ad);
+}
+
+/* ── NEW: Image upload area ── */
+.img-upload-area{
+  border:2px dashed var(--n300);border-radius:var(--r3);
+  padding:16px;text-align:center;cursor:pointer;
+  color:var(--n500);transition:.2s;position:relative;
+}
+.img-upload-area:hover,.img-upload-area.has-img{
+  border-color:var(--t);color:var(--t);background:var(--tp);
+}
+.img-preview{
+  display:none;width:100%;max-height:160px;
+  object-fit:contain;border-radius:var(--r2);margin-bottom:8px;
+}
+.img-preview.show{display:block}
+.img-upload-hint{font-size:13px;font-weight:500}
+.img-upload-sub{font-size:11.5px;color:var(--n400);margin-top:3px}
+.img-url-inp{
+  width:100%;margin-top:9px;padding:8px 12px;
+  border:1.5px solid var(--n200);border-radius:var(--r2);
+  font-size:13px;outline:none;background:#fff;
+}
+.img-url-inp:focus{border-color:var(--t)}
+
+/* ── NEW: Stock input with visual ── */
+.stock-ctrl{display:flex;align-items:center;gap:8px}
+.stock-ctrl input{
+  flex:1;padding:9px 12px;border:1.5px solid var(--n200);
+  border-radius:var(--r2);font-size:14px;font-family:var(--ff);
+  font-weight:600;color:var(--n800);outline:none;background:#fff;
+}
+.stock-ctrl input:focus{border-color:var(--t)}
+.stock-badge{
+  padding:5px 12px;border-radius:50px;font-size:12px;font-weight:700;
+  font-family:var(--ff);white-space:nowrap;
+}
+.sb-unlim{background:var(--tp);color:var(--t)}
+.sb-in{background:#e8f5e9;color:var(--ok)}
+.sb-low{background:#fff3e0;color:#e65100}
+.sb-out{background:var(--redp);color:var(--red)}
+
+/* ── NEW: Analytics cards ── */
+.analytics-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;
+}
+.stat-card{
+  background:#fff;border-radius:var(--r3);padding:14px;
+  box-shadow:var(--s1);border:1px solid var(--n200);text-align:center;
+}
+.stat-num{
+  font-family:var(--ff);font-size:24px;font-weight:800;
+  color:var(--t);line-height:1;margin-bottom:5px;
+}
+.stat-lbl{font-size:12px;color:var(--n500);font-weight:500}
+
+/* Top product row in admin analytics */
+.top-prod-row{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 0;border-bottom:1px solid var(--n100);
+}
+.top-prod-row:last-child{border-bottom:none}
+.top-rank{
+  font-family:var(--ff);font-size:15px;font-weight:800;
+  color:var(--n400);width:22px;flex-shrink:0;
+}
+.top-rank.gold{color:#f59e0b}
+.top-rank.silver{color:#94a3b8}
+.top-rank.bronze{color:#b45309}
+.top-bar-wrap{flex:1;min-width:0}
+.top-name{font-weight:700;font-size:13px;color:var(--n800);margin-bottom:3px}
+.top-bar-bg{height:5px;background:var(--n100);border-radius:3px;overflow:hidden}
+.top-bar{height:100%;background:var(--t2);border-radius:3px;transition:.4s}
+.top-score{
+  font-family:var(--ff);font-size:13px;font-weight:700;
+  color:var(--t);flex-shrink:0;
+}
+
+/* Order history in admin */
+.order-row{
+  padding:12px 0;border-bottom:1px solid var(--n100);
+}
+.order-row:last-child{border-bottom:none}
+.ord-top{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  margin-bottom:4px;
+}
+.ord-cust{font-family:var(--ff);font-size:13.5px;font-weight:700;color:var(--n800)}
+.ord-total{font-family:var(--ff);font-size:14px;font-weight:800;color:var(--t)}
+.ord-meta{font-size:12px;color:var(--n500)}
+.ord-items{font-size:12px;color:var(--n600);margin-top:3px;line-height:1.5}
+.ord-type-pill{
+  display:inline;padding:1px 7px;border-radius:50px;
+  font-size:10.5px;font-weight:700;background:var(--tp);color:var(--t);
+  margin-left:5px;
+}
+
+/* Settings fields */
+.s-field{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid var(--n100);gap:10px;
+}
+.s-field:last-child{border-bottom:none}
+.s-label{font-size:13.5px;font-weight:600;color:var(--n700)}
+.s-hint{font-size:11.5px;color:var(--n400);margin-top:1px}
+.s-inp{
+  padding:7px 10px;border:1.5px solid var(--n200);border-radius:8px;
+  font-size:14px;color:var(--n800);background:#fff;outline:none;
+  text-align:right;min-width:120px;max-width:190px;
+}
+.s-inp:focus{border-color:var(--t)}
+
+/* Toggle */
+.toggle{
+  position:relative;width:44px;height:24px;
+  background:var(--n300);border-radius:50px;cursor:pointer;transition:.2s;
+  flex-shrink:0;
+}
+.toggle.on{background:var(--t2)}
+.toggle::after{
+  content:'';position:absolute;top:3px;left:3px;
+  width:18px;height:18px;background:#fff;border-radius:50%;
+  transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.15);
+}
+.toggle.on::after{left:23px}
+
+/* Category admin row */
+.cat-adm-row{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 0;border-bottom:1px solid var(--n100);
+}
+.cat-adm-row:last-child{border-bottom:none}
+
+/* ─── ANIMATIONS ─────────────────────────── */
+@keyframes slideUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.pop{animation:bounce .25s ease}
+
+/* ─── RESPONSIVE ─────────────────────────── */
+@media(max-width:360px){
+  .prod-price{font-size:14px}
+  .prod-name{font-size:12.5px}
+  .adm-row3{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 0 — CUSTOMER TYPE
+     ═══════════════════════════════════════════ -->
+<div id="page-select" class="page active">
+  <div class="sp-header">
+    <div class="sp-logo">
+      <div class="sp-logo-icon">📦</div>
+      <div class="sp-logo-text">
+        <div class="name">XL TRADERS</div>
+        <div class="tag">PACKAGING &amp; DISPOSABLES · SURAT</div>
+      </div>
+    </div>
+    <div class="sp-title">Who are you?</div>
+    <div class="sp-sub">Select your type to see your<br>personalised pricing &amp; products</div>
+  </div>
+  <div class="ct-grid" id="ct-grid"></div>
+  <div class="usps">
+    <div class="usp"><span class="usp-ic">🚚</span><div class="usp-tx">Free Delivery</div></div>
+    <div class="usp"><span class="usp-ic">⚡</span><div class="usp-tx">Same Day</div></div>
+    <div class="usp"><span class="usp-ic">💰</span><div class="usp-tx">Best Rates</div></div>
+    <div class="usp"><span class="usp-ic">✅</span><div class="usp-tx">ISI Quality</div></div>
+  </div>
+  <button class="ct-btn" id="ct-btn" onclick="goToCatalog()">Continue →</button>
+  <!-- Hidden admin trigger -->
+  <div style="text-align:center;padding:26px 0 4px">
+    <span onclick="adminTap()" style="font-size:10.5px;color:rgba(255,255,255,.15);cursor:pointer;user-select:none">
+      xltraders990@gmail.com · 77780 52990
+    </span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 1 — PRODUCT CATALOG
+     ═══════════════════════════════════════════ -->
+<div id="page-catalog" class="page">
+  <div class="cat-hdr">
+    <div class="cat-hdr-top">
+      <button class="hdr-back" onclick="showPage('page-select')">←</button>
+      <div class="hdr-title-wrap">
+        <div class="hdr-title" id="hdr-title">Products</div>
+        <div class="hdr-sub">
+          <span id="hdr-sub">XL Traders · Surat</span>
+          <div class="price-tier-pill" id="price-tier-pill" style="display:none">
+            🏷️ <span id="price-tier-text">Your Price</span>
+          </div>
+        </div>
+      </div>
+      <button class="hdr-cart-btn" onclick="goToCart()">
+        🛒<span class="cart-badge" id="cart-badge"></span>
+      </button>
+    </div>
+    <div class="search-wrap">
+      <div class="search-box">
+        <span class="search-ic">🔍</span>
+        <input id="search-inp" type="search" placeholder="Search products..."
+          oninput="onSearch(this.value)" autocomplete="off">
+        <button class="search-clr" id="search-clr" onclick="clearSearch()">✕</button>
+      </div>
+    </div>
+    <div class="cat-tabs" id="cat-tabs"></div>
+  </div>
+
+  <div class="cat-body" id="cat-body">
+    <!-- Repeat order banner -->
+    <div class="repeat-banner" id="repeat-banner" onclick="loadRepeat()">
+      <div class="rb-top">
+        <span class="rb-title">🔄 Repeat Last Order</span>
+        <button class="rb-btn">Add All</button>
+      </div>
+      <div class="rb-items" id="rb-items">—</div>
+    </div>
+    <!-- Products rendered here -->
+    <div id="prods-wrap"></div>
+  </div>
+
+  <!-- Floating cart bar -->
+  <div class="fl-cart" id="fl-cart">
+    <div class="fl-inner" onclick="goToCart()">
+      <div class="fl-left">
+        <div class="fl-ic">🛒</div>
+        <div>
+          <div class="fl-cnt" id="fl-cnt">0 items</div>
+          <div class="fl-tot" id="fl-tot">₹0</div>
+        </div>
+      </div>
+      <button class="fl-go">View Cart →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 2 — CART
+     ═══════════════════════════════════════════ -->
+<div id="page-cart" class="page">
+  <div class="cart-hdr">
+    <button class="hdr-back" onclick="showPage('page-catalog');renderCatalog()">←</button>
+    <div class="cart-hdr-title">Your Order</div>
+  </div>
+  <div class="cart-body" id="cart-body"></div>
+  <div class="wa-btn-wrap">
+    <button class="wa-btn" onclick="placeOrder()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Send Order on WhatsApp
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     ADMIN PANEL
+     ═══════════════════════════════════════════ -->
+<div id="page-admin" class="page">
+  <div class="adm-hdr">
+    <button class="adm-back" onclick="showPage('page-select')">←</button>
+    <div class="adm-hdr-title">⚙️ Admin Panel</div>
+    <span style="font-size:11px;color:rgba(255,255,255,.3)">v2.0</span>
+  </div>
+  <div class="adm-tabs" id="adm-tabs">
+    <div class="adm-tab active" onclick="admTab('products')">📦 Products</div>
+    <div class="adm-tab" onclick="admTab('add')">➕ Add/Edit</div>
+    <div class="adm-tab" onclick="admTab('analytics')">📊 Analytics</div>
+    <div class="adm-tab" onclick="admTab('orders')">📋 Orders</div>
+    <div class="adm-tab" onclick="admTab('settings')">⚙️ Settings</div>
+  </div>
+  <div class="adm-body">
+
+    <!-- ── PRODUCTS LIST ── -->
+    <div class="adm-sec active" id="adm-products">
+      <div class="adm-card">
+        <div class="adm-card-title">All Products <span id="prod-count-badge"
+          style="background:var(--tp);color:var(--t);padding:2px 8px;border-radius:50px;font-size:12px"></span>
+        </div>
+        <div class="adm-field" style="margin-bottom:12px">
+          <input type="text" id="adm-srch" placeholder="🔍 Search products..."
+            oninput="admSearchProds(this.value)">
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+          <select id="adm-filter-cat" onchange="admRenderProds()"
+            style="padding:7px 10px;border:1.5px solid var(--n200);border-radius:var(--r2);font-size:13px;outline:none;background:#fff">
+            <option value="">All Categories</option>
+          </select>
+          <select id="adm-filter-active" onchange="admRenderProds()"
+            style="padding:7px 10px;border:1.5px solid var(--n200);border-radius:var(--r2);font-size:13px;outline:none;background:#fff">
+            <option value="">All Status</option>
+            <option value="1">Active Only</option>
+            <option value="0">Hidden Only</option>
+          </select>
+        </div>
+        <div id="adm-prod-list"></div>
+      </div>
+    </div>
+
+    <!-- ── ADD / EDIT PRODUCT ── -->
+    <div class="adm-sec" id="adm-add">
+      <div class="adm-card">
+        <div class="adm-card-title" id="adm-form-title">➕ Add New Product</div>
+        <input type="hidden" id="ep-id">
+
+        <!-- Basic info -->
+        <div class="adm-field">
+          <label>Product Name *</label>
+          <input type="text" id="ep-name" placeholder="e.g. 500ml Round Container">
+        </div>
+        <div class="adm-row2">
+          <div class="adm-field">
+            <label>Category *</label>
+            <select id="ep-cat"></select>
+          </div>
+          <div class="adm-field">
+            <label>Size / Spec</label>
+            <input type="text" id="ep-size" placeholder="e.g. 500ml · 100 pcs">
+          </div>
+        </div>
+        <div class="adm-row3">
+          <div class="adm-field">
+            <label>Unit Label</label>
+            <input type="text" id="ep-unit" placeholder="per pack">
+          </div>
+          <div class="adm-field">
+            <label>Min Order</label>
+            <input type="number" id="ep-moq" placeholder="1" min="1">
+          </div>
+          <div class="adm-field">
+            <label>Emoji</label>
+            <input type="text" id="ep-emoji" placeholder="🥡" maxlength="4">
+          </div>
+        </div>
+        <div class="adm-row2">
+          <div class="adm-field">
+            <label>Badge</label>
+            <select id="ep-badge">
+              <option value="">None</option>
+              <option value="popular">🔥 Popular</option>
+              <option value="new">✨ New</option>
+              <option value="sale">🏷 Sale</option>
+            </select>
+          </div>
+          <div class="adm-field">
+            <label>Customer Types</label>
+            <select id="ep-ctype" multiple style="height:72px;font-size:12px"></select>
+          </div>
+        </div>
+
+        <!-- ── NEW: PRODUCT IMAGE ── -->
+        <div class="adm-field">
+          <label>Product Image</label>
+          <div class="img-upload-area" id="img-drop-area"
+            onclick="document.getElementById('img-file-inp').click()">
+            <img id="img-preview" class="img-preview" src="" alt="">
+            <div id="img-drop-hint">
+              <div style="font-size:28px;margin-bottom:6px">📷</div>
+              <div class="img-upload-hint">Tap to upload photo</div>
+              <div class="img-upload-sub">JPG / PNG · Auto-compressed</div>
+            </div>
+          </div>
+          <input type="file" id="img-file-inp" accept="image/*" style="display:none"
+            onchange="handleImgUpload(this)">
+          <input type="text" class="img-url-inp" id="ep-img-url"
+            placeholder="Or paste image URL (https://...)..."
+            oninput="handleImgUrl(this.value)">
+          <input type="hidden" id="ep-img">
+          <button onclick="clearImg()" style="margin-top:5px;background:none;border:none;
+            color:var(--red);font-size:12.5px;cursor:pointer;font-family:var(--ff)">
+            ✕ Remove Image
+          </button>
+        </div>
+
+        <!-- ── NEW: STOCK MANAGEMENT ── -->
+        <div class="adm-field">
+          <label>Stock (leave blank = unlimited)</label>
+          <div class="stock-ctrl">
+            <input type="number" id="ep-stock" min="0"
+              placeholder="Blank = unlimited"
+              oninput="updateStockBadge(this.value)">
+            <div class="stock-badge sb-unlim" id="stock-badge-preview">♾️ Unlimited</div>
+          </div>
+        </div>
+
+        <!-- ── NEW: PER-CUSTOMER PRICING ── -->
+        <div class="adm-field">
+          <label>Customer-wise Pricing (₹)</label>
+          <div class="price-grid" id="price-grid">
+            <div class="pg-row default">
+              <div class="pg-label">⭐ Default Price</div>
+              <input type="number" class="pg-inp" id="pp-default"
+                placeholder="0" min="0" oninput="syncPriceInputs()" step="0.5">
+            </div>
+            <!-- Customer type rows injected by JS -->
+          </div>
+          <div style="font-size:11.5px;color:var(--n400);margin-top:5px">
+            Blank = use Default Price · Different prices highlight automatically
+          </div>
+        </div>
+
+        <div class="adm-field" style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:13.5px;font-weight:600;color:var(--n700)">Active (visible to customers)</div>
+          </div>
+          <div class="toggle on" id="ep-active" onclick="this.classList.toggle('on')"></div>
+        </div>
+
+        <div class="abtn-row">
+          <button class="abtn abtn-g" onclick="saveProduct()">💾 Save Product</button>
+          <button class="abtn abtn-s" onclick="resetProductForm()">↺ Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ANALYTICS ── -->
+    <div class="adm-sec" id="adm-analytics">
+      <div class="analytics-grid" id="stats-grid"></div>
+      <div class="adm-card">
+        <div class="adm-card-title">🔥 Top Selling Products</div>
+        <div id="top-prods-list"></div>
+      </div>
+      <div class="adm-card">
+        <div class="adm-card-title">📊 Sales by Customer Type</div>
+        <div id="type-sales-list"></div>
+      </div>
+    </div>
+
+    <!-- ── ORDERS ── -->
+    <div class="adm-sec" id="adm-orders">
+      <div class="adm-card">
+        <div class="adm-card-title">📋 Order History
+          <span id="order-count-badge"
+            style="background:var(--tp);color:var(--t);padding:2px 8px;border-radius:50px;font-size:12px;margin-left:4px"></span>
+        </div>
+        <div class="adm-field" style="margin-bottom:12px">
+          <input type="text" id="order-srch" placeholder="🔍 Search by name or phone..."
+            oninput="admRenderOrders(this.value)">
+        </div>
+        <div id="orders-list"></div>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div class="adm-sec" id="adm-settings">
+      <div class="adm-card">
+        <div class="adm-card-title">🏪 Business Settings</div>
+        <div class="s-field">
+          <div><div class="s-label">Business Name</div></div>
+          <input class="s-inp" id="s-name" value="XL Traders">
+        </div>
+        <div class="s-field">
+          <div><div class="s-label">WhatsApp Number</div><div class="s-hint">With country code</div></div>
+          <input class="s-inp" id="s-wa" value="917778052990" type="tel">
+        </div>
+        <div class="s-field">
+          <div><div class="s-label">Second Number</div><div class="s-hint">Optional backup</div></div>
+          <input class="s-inp" id="s-wa2" value="919898225007" type="tel">
+        </div>
+        <div class="s-field">
+          <div><div class="s-label">City</div></div>
+          <input class="s-inp" id="s-city" value="Surat">
+        </div>
+        <div class="s-field">
+          <div><div class="s-label">Delivery Note</div></div>
+          <input class="s-inp" id="s-del" value="Free delivery in Surat" style="width:200px">
+        </div>
+        <div class="s-field">
+          <div><div class="s-label">Show Prices</div></div>
+          <div class="toggle on" id="s-prices" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="s-field">
+          <div><div class="s-label">Show Savings vs Default</div><div class="s-hint">Show discount on product cards</div></div>
+          <div class="toggle on" id="s-savings" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+
+      <div class="adm-card">
+        <div class="adm-card-title">📦 Categories</div>
+        <div id="cats-list"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+          <input type="text" id="nc-name" placeholder="Category name"
+            style="flex:1;padding:8px 12px;border:1.5px solid var(--n200);border-radius:var(--r2);font-size:13.5px;outline:none">
+          <input type="text" id="nc-emoji" placeholder="Emoji"
+            style="width:54px;padding:8px;border:1.5px solid var(--n200);border-radius:var(--r2);font-size:20px;text-align:center;outline:none">
+          <button class="abtn abtn-g" onclick="addCategory()">Add</button>
+        </div>
+      </div>
+
+      <div class="adm-card">
+        <div class="adm-card-title">💾 Data Management</div>
+        <div class="abtn-row">
+          <button class="abtn abtn-g" onclick="saveSettings()">💾 Save Settings</button>
+          <button class="abtn abtn-b" onclick="exportData()">📤 Export JSON</button>
+          <label class="abtn abtn-s" style="cursor:pointer">
+            📥 Import JSON
+            <input type="file" accept=".json" style="display:none" onchange="importData(this)">
+          </label>
+        </div>
+        <div style="margin-top:12px">
+          <button class="abtn abtn-r" onclick="resetDefaults()">⚠️ Reset All to Default</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /adm-body -->
+</div><!-- /page-admin -->
+
+<script>
+'use strict';
+/* ═══════════════════════════════════════════════════════
+   XL TRADERS v2 — COMPLETE UPGRADED SYSTEM
+   ═══════════════════════════════════════════════════════ */
+
+// ─── STORAGE ────────────────────────────────────────────
+const DB = {
+  get:(k,d)=>{try{const v=localStorage.getItem('xlt2_'+k);return v?JSON.parse(v):d}catch{return d}},
+  set:(k,v)=>{try{localStorage.setItem('xlt2_'+k,JSON.stringify(v))}catch(e){console.warn('Storage full',e)}},
+  del:k=>localStorage.removeItem('xlt2_'+k)
+};
+
+// ─── DEFAULT SETTINGS ───────────────────────────────────
+const DEF_SETTINGS = {
+  bizName:'XL Traders',
+  waNum:'917778052990',
+  waNum2:'919898225007',
+  city:'Surat',
+  deliveryNote:'Free delivery in Surat',
+  showPrices:true,
+  showSavings:true,
+  priceNote:'Final prices confirmed on WhatsApp'
+};
+
+// ─── CUSTOMER TYPES (static definition) ─────────────────
+const CTYPES = [
+  {id:'street',    name:'Street Food',    icon:'🌮', desc:'Vendors & Stalls',     cats:['containers','cups','plates','cutlery','bags']},
+  {id:'cloud',     name:'Cloud Kitchen',  icon:'☁️', desc:'Online Food Business', cats:['containers','boxes','bags','foil','cutlery']},
+  {id:'restaurant',name:'Restaurant',     icon:'🍴', desc:'Dine-in & Takeaway',   cats:['containers','cups','plates','cutlery','foil','wrapping']},
+  {id:'caterer',   name:'Caterer',        icon:'🎪', desc:'Events & Functions',   cats:['plates','cups','cutlery','foil','containers','bags']},
+  {id:'kirana',    name:'Kirana Store',   icon:'🏪', desc:'Retail Shop',          cats:['bags','containers','cups','boxes','wrapping']},
+];
+
+// ─── DEFAULT CATEGORIES ──────────────────────────────────
+const DEF_CATS = [
+  {id:'containers', name:'Containers',    emoji:'🥡'},
+  {id:'cups',       name:'Cups & Glasses',emoji:'☕'},
+  {id:'plates',     name:'Plates & Trays',emoji:'🍽️'},
+  {id:'cutlery',    name:'Cutlery',       emoji:'🥄'},
+  {id:'bags',       name:'Carry Bags',    emoji:'🛍️'},
+  {id:'foil',       name:'Foil Items',    emoji:'🔲'},
+  {id:'boxes',      name:'Boxes & Packs', emoji:'📦'},
+  {id:'wrapping',   name:'Wrapping & Misc',emoji:'🎁'},
+];
+
+// ─── DEFAULT PRODUCTS (UPGRADED DATA STRUCTURE) ──────────
+/*
+ * ── NEW: price is now an OBJECT with per-customer-type keys
+ * price: { default:110, street:118, cloud:104, restaurant:108, caterer:96, kirana:120 }
+ * stock: null=unlimited, 0=OOS, N=available
+ * popularityScore: auto-incremented on each order
+ * orderCount: times this product was ordered
+ * image: base64 or URL (null=use emoji)
+ */
+const DEF_PRODUCTS = [
+  // ── CONTAINERS ──────────────────────────────────────────
+  {id:'p01',name:'250ml Round Container',category:'containers',
+   customerType:['street','cloud','restaurant','caterer','kirana'],
+   size:'250ml · 100 pcs/pack',
+   price:{default:85,street:90,cloud:80,restaurant:84,caterer:75,kirana:88},
+   unit:'per pack',moq:1,emoji:'🥡',image:null,badge:'',active:true,stock:null,popularityScore:0,orderCount:0},
+
+  {id:'p02',name:'500ml Round Container',category:'containers',
+   customerType:['street','cloud','restaurant','caterer','kirana'],
+   size:'500ml · 100 pcs/pack',
+   price:{default:110,street:115,cloud:104,restaurant:108,caterer:96,kirana:120},
+   unit:'per pack',moq:1,emoji:'🥡',image:null,badge:'popular',active:true,stock:null,popularityScore:45,orderCount:18},
+
+  {id:'p03',name:'750ml Round Container',category:'containers',
+   customerType:['street','cloud','restaurant','caterer'],
+   size:'750ml · 100 pcs/pack',
+   price:{default:140,street:148,cloud:133,restaurant:138,caterer:124,kirana:152},
+   unit:'per pack',moq:1,emoji:'🥡',image:null,badge:'',active:true,stock:null,popularityScore:22,orderCount:9},
+
+  {id:'p04',name:'1000ml Round Container',category:'containers',
+   customerType:['street','cloud','restaurant','caterer'],
+   size:'1000ml · 50 pcs/pack',
+   price:{default:120,street:128,cloud:114,restaurant:118,caterer:106,kirana:132},
+   unit:'per pack',moq:1,emoji:'🥡',image:null,badge:'popular',active:true,stock:null,popularityScore:38,orderCount:15},
+
+  {id:'p05',name:'1500ml Rect. Container',category:'containers',
+   customerType:['cloud','restaurant','caterer'],
+   size:'1500ml · 50 pcs/pack',
+   price:{default:155,cloud:146,restaurant:150,caterer:138,kirana:165},
+   unit:'per pack',moq:1,emoji:'📦',image:null,badge:'new',active:true,stock:null,popularityScore:8,orderCount:4},
+
+  {id:'p06',name:'Leak-proof Combo Set',category:'containers',
+   customerType:['cloud','restaurant'],
+   size:'500ml+1000ml · 25 sets',
+   price:{default:195,cloud:182,restaurant:188},
+   unit:'per combo',moq:1,emoji:'🔒',image:null,badge:'new',active:true,stock:null,popularityScore:5,orderCount:3},
+
+  // ── CUPS & GLASSES ───────────────────────────────────────
+  {id:'p07',name:'80ml Paper Cup',category:'cups',
+   customerType:['street','restaurant','caterer','kirana'],
+   size:'80ml · 100 pcs/pack',
+   price:{default:38,street:40,restaurant:37,caterer:33,kirana:42},
+   unit:'per pack',moq:2,emoji:'☕',image:null,badge:'popular',active:true,stock:null,popularityScore:30,orderCount:14},
+
+  {id:'p08',name:'150ml Paper Cup',category:'cups',
+   customerType:['street','restaurant','caterer','kirana'],
+   size:'150ml · 100 pcs/pack',
+   price:{default:55,street:58,restaurant:53,caterer:48,kirana:60},
+   unit:'per pack',moq:2,emoji:'☕',image:null,badge:'',active:true,stock:null,popularityScore:18,orderCount:8},
+
+  {id:'p09',name:'200ml Paper Cup',category:'cups',
+   customerType:['street','restaurant','caterer','kirana'],
+   size:'200ml · 100 pcs/pack',
+   price:{default:68,street:72,restaurant:65,caterer:60,kirana:75},
+   unit:'per pack',moq:1,emoji:'☕',image:null,badge:'',active:true,stock:null,popularityScore:12,orderCount:6},
+
+  {id:'p10',name:'Plastic Disposable Glass',category:'cups',
+   customerType:['street','caterer','kirana'],
+   size:'200ml · 50 pcs/pack',
+   price:{default:45,street:48,caterer:40,kirana:50},
+   unit:'per pack',moq:2,emoji:'🥤',image:null,badge:'',active:true,stock:null,popularityScore:14,orderCount:7},
+
+  {id:'p11',name:'Tea Cup with Lid',category:'cups',
+   customerType:['street','restaurant','caterer'],
+   size:'100ml · 50 pcs/pack',
+   price:{default:72,street:76,restaurant:69,caterer:64},
+   unit:'per pack',moq:1,emoji:'🍵',image:null,badge:'new',active:true,stock:null,popularityScore:6,orderCount:3},
+
+  // ── PLATES & TRAYS ───────────────────────────────────────
+  {id:'p12',name:'Round Disposable Plate',category:'plates',
+   customerType:['street','caterer','kirana'],
+   size:'8 inch · 50 pcs/pack',
+   price:{default:65,street:68,caterer:58,kirana:72},
+   unit:'per pack',moq:2,emoji:'🍽️',image:null,badge:'popular',active:true,stock:null,popularityScore:28,orderCount:12},
+
+  {id:'p13',name:'3-Section Meal Tray',category:'plates',
+   customerType:['restaurant','caterer','cloud'],
+   size:'25×20cm · 25 pcs/pack',
+   price:{default:90,restaurant:86,caterer:80,cloud:84},
+   unit:'per pack',moq:1,emoji:'🍱',image:null,badge:'',active:true,stock:null,popularityScore:16,orderCount:7},
+
+  {id:'p14',name:'Aluminum Foil Plate',category:'plates',
+   customerType:['caterer','restaurant'],
+   size:'250ml · 100 pcs/pack',
+   price:{default:145,caterer:132,restaurant:140},
+   unit:'per pack',moq:1,emoji:'🔲',image:null,badge:'',active:true,stock:null,popularityScore:10,orderCount:5},
+
+  {id:'p15',name:'Sugarcane Plate (Eco)',category:'plates',
+   customerType:['caterer','restaurant'],
+   size:'10 inch · 25 pcs/pack',
+   price:{default:120,caterer:108,restaurant:115},
+   unit:'per pack',moq:1,emoji:'🌿',image:null,badge:'new',active:true,stock:null,popularityScore:4,orderCount:2},
+
+  // ── CUTLERY ──────────────────────────────────────────────
+  {id:'p16',name:'Plastic Spoon',category:'cutlery',
+   customerType:['street','cloud','restaurant','caterer','kirana'],
+   size:'100 pcs/pack',
+   price:{default:22,street:24,cloud:21,restaurant:22,caterer:18,kirana:26},
+   unit:'per pack',moq:5,emoji:'🥄',image:null,badge:'popular',active:true,stock:null,popularityScore:52,orderCount:22},
+
+  {id:'p17',name:'Plastic Fork',category:'cutlery',
+   customerType:['street','cloud','restaurant','caterer'],
+   size:'100 pcs/pack',
+   price:{default:24,street:26,cloud:23,restaurant:24,caterer:20},
+   unit:'per pack',moq:5,emoji:'🍴',image:null,badge:'',active:true,stock:null,popularityScore:35,orderCount:16},
+
+  {id:'p18',name:'Cutlery Combo Set',category:'cutlery',
+   customerType:['cloud','restaurant','caterer'],
+   size:'Spoon+Fork+Knife · 50 sets',
+   price:{default:75,cloud:70,restaurant:73,caterer:65},
+   unit:'per pack',moq:2,emoji:'🍽️',image:null,badge:'popular',active:true,stock:null,popularityScore:25,orderCount:11},
+
+  {id:'p19',name:'Wooden Spoon (Eco)',category:'cutlery',
+   customerType:['restaurant','caterer'],
+   size:'100 pcs/pack',
+   price:{default:55,restaurant:52,caterer:48},
+   unit:'per pack',moq:2,emoji:'🌿',image:null,badge:'new',active:true,stock:null,popularityScore:3,orderCount:2},
+
+  // ── CARRY BAGS ───────────────────────────────────────────
+  {id:'p20',name:'LLDP Carry Bag Small',category:'bags',
+   customerType:['street','kirana'],
+   size:'10×14 inch · 1 kg',
+   price:{default:75,street:78,kirana:80},
+   unit:'per kg',moq:2,emoji:'🛍️',image:null,badge:'popular',active:true,stock:null,popularityScore:40,orderCount:18},
+
+  {id:'p21',name:'LLDP Carry Bag Medium',category:'bags',
+   customerType:['street','kirana'],
+   size:'12×16 inch · 1 kg',
+   price:{default:80,street:83,kirana:86},
+   unit:'per kg',moq:2,emoji:'🛍️',image:null,badge:'',active:true,stock:null,popularityScore:30,orderCount:13},
+
+  {id:'p22',name:'LLDP Carry Bag Large',category:'bags',
+   customerType:['kirana','caterer'],
+   size:'14×18 inch · 1 kg',
+   price:{default:85,caterer:80,kirana:90},
+   unit:'per kg',moq:2,emoji:'🛍️',image:null,badge:'',active:true,stock:null,popularityScore:18,orderCount:8},
+
+  {id:'p23',name:'Biodegradable Bag',category:'bags',
+   customerType:['restaurant','cloud','kirana'],
+   size:'12×16 inch · 100 pcs',
+   price:{default:95,restaurant:90,cloud:88,kirana:100},
+   unit:'per pack',moq:1,emoji:'🌿',image:null,badge:'new',active:true,stock:null,popularityScore:9,orderCount:4},
+
+  {id:'p24',name:'HM Carry Bag (51 micron)',category:'bags',
+   customerType:['street','kirana'],
+   size:'51 micron · 1 kg',
+   price:{default:88,street:92,kirana:95},
+   unit:'per kg',moq:2,emoji:'🛍️',image:null,badge:'',active:true,stock:null,popularityScore:22,orderCount:10},
+
+  // ── FOIL ─────────────────────────────────────────────────
+  {id:'p25',name:'Aluminum Foil Roll',category:'foil',
+   customerType:['restaurant','caterer','cloud'],
+   size:'72m × 30cm',
+   price:{default:165,restaurant:158,caterer:148,cloud:155},
+   unit:'per roll',moq:1,emoji:'🔲',image:null,badge:'popular',active:true,stock:null,popularityScore:20,orderCount:9},
+
+  {id:'p26',name:'Foil Container 400ml',category:'foil',
+   customerType:['restaurant','caterer'],
+   size:'400ml · 100 pcs/pack',
+   price:{default:125,restaurant:120,caterer:112},
+   unit:'per pack',moq:1,emoji:'🥘',image:null,badge:'',active:true,stock:null,popularityScore:14,orderCount:6},
+
+  {id:'p27',name:'Foil Container 800ml',category:'foil',
+   customerType:['restaurant','caterer'],
+   size:'800ml · 50 pcs/pack',
+   price:{default:140,restaurant:134,caterer:126},
+   unit:'per pack',moq:1,emoji:'🥘',image:null,badge:'',active:true,stock:null,popularityScore:10,orderCount:5},
+
+  // ── BOXES ────────────────────────────────────────────────
+  {id:'p28',name:'Pizza Box 8 inch',category:'boxes',
+   customerType:['cloud','restaurant'],
+   size:'8 inch · 50 pcs/pack',
+   price:{default:195,cloud:184,restaurant:190},
+   unit:'per pack',moq:1,emoji:'🍕',image:null,badge:'popular',active:true,stock:null,popularityScore:18,orderCount:8},
+
+  {id:'p29',name:'Pizza Box 10 inch',category:'boxes',
+   customerType:['cloud','restaurant'],
+   size:'10 inch · 50 pcs/pack',
+   price:{default:245,cloud:232,restaurant:238},
+   unit:'per pack',moq:1,emoji:'🍕',image:null,badge:'',active:true,stock:null,popularityScore:12,orderCount:5},
+
+  {id:'p30',name:'Burger Box',category:'boxes',
+   customerType:['cloud','restaurant','street'],
+   size:'12×12 cm · 100 pcs',
+   price:{default:155,cloud:146,restaurant:150,street:160},
+   unit:'per pack',moq:1,emoji:'🍔',image:null,badge:'new',active:true,stock:null,popularityScore:8,orderCount:4},
+
+  {id:'p31',name:'Rice Box 750ml',category:'boxes',
+   customerType:['cloud','restaurant'],
+   size:'750ml · 100 pcs/pack',
+   price:{default:175,cloud:165,restaurant:170},
+   unit:'per pack',moq:1,emoji:'🍚',image:null,badge:'popular',active:true,stock:null,popularityScore:16,orderCount:7},
+
+  // ── WRAPPING ─────────────────────────────────────────────
+  {id:'p32',name:'Cling Wrap Roll',category:'wrapping',
+   customerType:['restaurant','caterer','cloud'],
+   size:'100m × 30cm',
+   price:{default:145,restaurant:138,caterer:130,cloud:140},
+   unit:'per roll',moq:1,emoji:'🎁',image:null,badge:'',active:true,stock:null,popularityScore:8,orderCount:4},
+
+  {id:'p33',name:'Butter Paper Sheet',category:'wrapping',
+   customerType:['street','restaurant','caterer'],
+   size:'100 sheets/pack',
+   price:{default:65,street:68,restaurant:62,caterer:58},
+   unit:'per pack',moq:3,emoji:'📄',image:null,badge:'popular',active:true,stock:null,popularityScore:24,orderCount:11},
+
+  {id:'p34',name:'Tissue Paper Bulk',category:'wrapping',
+   customerType:['restaurant','caterer','kirana'],
+   size:'100 pcs/pack',
+   price:{default:45,restaurant:42,caterer:38,kirana:48},
+   unit:'per pack',moq:5,emoji:'🧻',image:null,badge:'popular',active:true,stock:null,popularityScore:20,orderCount:9},
+
+  {id:'p35',name:'Straight Straw',category:'wrapping',
+   customerType:['street','restaurant','kirana'],
+   size:'200 pcs/pack',
+   price:{default:28,street:30,restaurant:27,kirana:32},
+   unit:'per pack',moq:5,emoji:'🥤',image:null,badge:'',active:true,stock:null,popularityScore:15,orderCount:7},
+];
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let products      = DB.get('products',   DEF_PRODUCTS);
+let categories    = DB.get('categories', DEF_CATS);
+let settings      = DB.get('settings',   DEF_SETTINGS);
+let favorites     = DB.get('favorites',  {});   // { typeId: [prodId,...] }
+let orderHistory  = DB.get('orderHistory', []); // array of order objects
+let cart          = {};          // { prodId: qty }
+let selectedType  = null;        // CTYPE object
+let activeCat     = 'all';
+let searchQ       = '';
+
+// ═══════════════════════════════════════════════════════
+// NEW: PRICE RESOLUTION SYSTEM
+// Handles legacy (number) and new (object) price formats
+// ═══════════════════════════════════════════════════════
+function resolvePrice(product, typeId) {
+  const p = product.price;
+  if (!p && p !== 0) return 0;
+  if (typeof p === 'number') return p;          // backward compat
+  if (typeof p === 'object') {
+    return p[typeId] ?? p.default ?? Object.values(p)[0] ?? 0;
+  }
+  return 0;
+}
+
+function getDefaultPrice(product) {
+  const p = product.price;
+  if (!p) return 0;
+  if (typeof p === 'number') return p;
+  return p.default ?? Object.values(p)[0] ?? 0;
+}
+
+// Calculate savings vs default price for current customer type
+function getSavings(product, typeId) {
+  const def  = getDefaultPrice(product);
+  const mine = resolvePrice(product, typeId);
+  return Math.max(0, def - mine);
+}
+
+// ═══════════════════════════════════════════════════════
+// NEW: STOCK MANAGEMENT
+// ═══════════════════════════════════════════════════════
+function isOOS(p) {
+  return p.stock !== null && p.stock !== undefined && p.stock === 0;
+}
+function isLowStock(p) {
+  return p.stock !== null && p.stock !== undefined && p.stock > 0 && p.stock <= 5;
+}
+function stockLabel(p) {
+  if (p.stock === null || p.stock === undefined) return {cls:'sb-unlim', text:'♾️ Unlimited'};
+  if (p.stock === 0) return {cls:'sb-out', text:'⛔ Out of Stock'};
+  if (p.stock <= 5)  return {cls:'sb-low', text:`⚠️ Only ${p.stock} left`};
+  return {cls:'sb-in', text:`✅ ${p.stock} in stock`};
+}
+
+// NEW: Decrement stock when ordered
+function decrementStock(cartItems) {
+  cartItems.forEach(({product:p, qty}) => {
+    const idx = products.findIndex(x => x.id === p.id);
+    if (idx < 0 || products[idx].stock === null || products[idx].stock === undefined) return;
+    products[idx].stock = Math.max(0, products[idx].stock - qty);
+  });
+  DB.set('products', products);
+}
+
+// ═══════════════════════════════════════════════════════
+// NEW: FAVORITES SYSTEM
+// Stored per customer type
+// ═══════════════════════════════════════════════════════
+function isFav(productId) {
+  const k = selectedType?.id || 'all';
+  return (favorites[k] || []).includes(productId);
+}
+
+function toggleFav(productId, event) {
+  event?.stopPropagation();
+  const k = selectedType?.id || 'all';
+  if (!favorites[k]) favorites[k] = [];
+  const idx = favorites[k].indexOf(productId);
+  if (idx >= 0) { favorites[k].splice(idx, 1); toast('Removed from favorites'); }
+  else           { favorites[k].push(productId); toast('Added to favorites ❤️'); }
+  DB.set('favorites', favorites);
+  const btn = document.getElementById('fv-'+productId);
+  if (btn) { btn.textContent = isFav(productId)?'❤️':'🤍'; btn.classList.toggle('active', isFav(productId)); }
+}
+
+function getFavProducts() {
+  const k = selectedType?.id || 'all';
+  const ids = favorites[k] || [];
+  return products.filter(p => ids.includes(p.id) && p.active !== false);
+}
+
+// ═══════════════════════════════════════════════════════
+// NEW: ANALYTICS — Track popularity on order
+// ═══════════════════════════════════════════════════════
+function trackOrderAnalytics(cartItems, typeId) {
+  cartItems.forEach(({product:p, qty}) => {
+    const idx = products.findIndex(x => x.id === p.id);
+    if (idx < 0) return;
+    products[idx].popularityScore = (products[idx].popularityScore || 0) + qty;
+    products[idx].orderCount      = (products[idx].orderCount      || 0) + 1;
+  });
+  DB.set('products', products);
+}
+
+function getTopProducts(n=8) {
+  return [...products]
+    .filter(p => (p.popularityScore || 0) > 0)
+    .sort((a,b) => (b.popularityScore||0) - (a.popularityScore||0))
+    .slice(0, n);
+}
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ═══════════════════════════════════════════════════════
+// PAGE 0 — CUSTOMER TYPE SELECTION
+// ═══════════════════════════════════════════════════════
+function renderCtypes() {
+  const grid = document.getElementById('ct-grid');
+  grid.innerHTML = CTYPES.map(ct => `
+    <div class="ct-card" id="ctc-${ct.id}" onclick="selectType('${ct.id}')">
+      <span class="ct-icon">${ct.icon}</span>
+      <div class="ct-name">${ct.name}</div>
+      <div class="ct-desc">${ct.desc}</div>
+    </div>`).join('');
+}
+
+function selectType(id) {
+  selectedType = CTYPES.find(t => t.id === id);
+  document.querySelectorAll('.ct-card').forEach(c => c.classList.remove('sel'));
+  document.getElementById('ctc-'+id)?.classList.add('sel');
+  const btn = document.getElementById('ct-btn');
+  btn.classList.add('show');
+  btn.textContent = `Shop as ${selectedType.name} →`;
+}
+
+function goToCatalog() {
+  if (!selectedType) { toast('Select your business type first!'); return; }
+  activeCat = 'all'; searchQ = '';
+  renderCatalog();
+  showPage('page-catalog');
+  updateCartUI();
+}
+
+// ═══════════════════════════════════════════════════════
+// PAGE 1 — CATALOG RENDERING
+// ═══════════════════════════════════════════════════════
+function renderCatalog() {
+  // Header
+  document.getElementById('hdr-title').textContent = selectedType
+    ? `${selectedType.icon} ${selectedType.name}`
+    : 'All Products';
+
+  // Price tier pill
+  const pill = document.getElementById('price-tier-pill');
+  const pt   = document.getElementById('price-tier-text');
+  if (selectedType) {
+    pt.textContent = `${selectedType.name} Pricing`;
+    pill.style.display = 'inline-flex';
+  } else {
+    pill.style.display = 'none';
+  }
+
+  renderCatTabs();
+  renderProducts();
+  renderRepeatBanner();
+}
+
+function renderCatTabs() {
+  const validCats = selectedType
+    ? categories.filter(c => selectedType.cats.includes(c.id))
+    : categories;
+  const tabs = document.getElementById('cat-tabs');
+  tabs.innerHTML =
+    `<div class="cat-tab ${activeCat==='all'?'active':''}" onclick="setCat('all')">All</div>` +
+    validCats.map(c =>
+      `<div class="cat-tab ${activeCat===c.id?'active':''}" onclick="setCat('${c.id}')">
+         ${c.emoji} ${c.name}</div>`
+    ).join('');
+}
+
+function setCat(id) {
+  activeCat = id; searchQ = '';
+  const inp = document.getElementById('search-inp');
+  if (inp) inp.value = '';
+  document.getElementById('search-clr')?.classList.remove('show');
+  renderCatTabs(); renderProducts();
+}
+
+// Get filtered product list
+function getFiltered() {
+  let p = products.filter(x => x.active !== false);
+  if (selectedType) p = p.filter(x => x.customerType.includes(selectedType.id));
+  if (activeCat !== 'all') p = p.filter(x => x.category === activeCat);
+  if (searchQ) {
+    const q = searchQ.toLowerCase();
+    p = p.filter(x =>
+      x.name.toLowerCase().includes(q) ||
+      (x.size||'').toLowerCase().includes(q)
+    );
+  }
+  return p;
+}
+
+function renderProducts() {
+  const wrap = document.getElementById('prods-wrap');
+  const prods = getFiltered();
+
+  if (!prods.length) {
+    wrap.innerHTML = `<div class="no-results">
+      <div class="ic">📦</div>
+      <h3>No products found</h3>
+      <p>Try a different category or clear search</p>
+    </div>`;
+    return;
+  }
+
+  // Show all in one page — group by sections when "all" tab active
+  if (activeCat === 'all' && !searchQ) {
+    let html = '';
+
+    // Favorites section (NEW)
+    const favs = getFavProducts().filter(p =>
+      !selectedType || p.customerType.includes(selectedType.id)
+    );
+    if (favs.length) {
+      html += `<div class="sec-title">❤️ My Favorites</div>
+        <div class="prod-grid">${favs.map(prodCard).join('')}</div>`;
+    }
+
+    // Top selling section (NEW)
+    const tops = getTopProducts(4).filter(p =>
+      prods.some(x => x.id === p.id)
+    );
+    if (tops.length) {
+      html += `<div class="sec-title">🔥 Top Selling</div>
+        <div class="prod-grid">${tops.map(prodCard).join('')}</div>`;
+    }
+
+    // Category sections
+    const validCats = selectedType
+      ? categories.filter(c => selectedType.cats.includes(c.id))
+      : categories;
+
+    validCats.forEach(cat => {
+      const cp = prods.filter(p => p.category === cat.id);
+      if (!cp.length) return;
+      html += `<div class="sec-title">${cat.emoji} ${cat.name}</div>
+        <div class="prod-grid">${cp.map(prodCard).join('')}</div>`;
+    });
+
+    wrap.innerHTML = html;
+  } else {
+    wrap.innerHTML = `<div class="prod-grid" style="margin-top:14px">
+      ${prods.map(prodCard).join('')}</div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// PRODUCT CARD (heavily upgraded)
+// ═══════════════════════════════════════════════════════
+function prodCard(p) {
+  const typeId   = selectedType?.id || 'default';
+  const price    = resolvePrice(p, typeId);
+  const defPrice = getDefaultPrice(p);
+  const savings  = getSavings(p, typeId);
+  const qty      = cart[p.id] || 0;
+  const inCart   = qty > 0;
+  const oos      = isOOS(p);
+  const lowStock = isLowStock(p);
+  const showPx   = settings.showPrices !== false;
+  const showSav  = settings.showSavings !== false && savings > 0 && selectedType;
+
+  // Badge
+  const badge = p.badge
+    ? `<div class="prod-badge badge-${p.badge}">
+         ${p.badge==='popular'?'🔥 Popular':p.badge==='new'?'✨ New':'🏷 Sale'}</div>`
+    : '';
+
+  // Favorite button (NEW)
+  const favActive = isFav(p.id);
+  const favBtn = `<button class="fav-btn ${favActive?'active':''}"
+    id="fv-${p.id}" onclick="toggleFav('${p.id}',event)"
+    title="Favorite">${favActive?'❤️':'🤍'}</button>`;
+
+  // Image or emoji (NEW)
+  const imgContent = p.image
+    ? `<img src="${p.image}" alt="${p.name}" loading="lazy"
+          onerror="this.style.display='none';document.getElementById('emj-${p.id}').style.display='flex'">
+       <div class="prod-emoji-bg" id="emj-${p.id}" style="display:none">${p.emoji||'📦'}</div>`
+    : `<div class="prod-emoji-bg">${p.emoji||'📦'}</div>`;
+
+  // Stock strip (NEW)
+  const stockHTML = lowStock
+    ? `<div class="stock-strip low">⚠️ Only ${p.stock} left</div>` : '';
+
+  // OOS overlay (NEW)
+  const oosHTML = oos
+    ? `<div class="oos-overlay"><div class="oos-label">OUT OF STOCK</div></div>` : '';
+
+  // Price display
+  const priceHTML = showPx ? `
+    <div class="prod-price-row">
+      <div class="prod-price">₹${price}<span class="punit"> ${p.unit||''}</span></div>
+      ${showSav ? `<span class="savings-pill show">-₹${savings}</span>` : ''}
+    </div>
+    ${showSav && defPrice !== price ? `<div style="font-size:11px;color:var(--n400);text-decoration:line-through;margin-bottom:5px">₹${defPrice} default</div>` : ''}` :
+    `<div class="prod-price-row"><div class="prod-price"><span class="punit">Price on WhatsApp</span></div></div>`;
+
+  // Add button
+  const addBtnHTML = oos
+    ? `<button class="add-btn oos-btn" disabled>Out of Stock</button>`
+    : `<button class="add-btn ${inCart?'added':''}" id="ab-${p.id}" onclick="addToCart('${p.id}')">
+         ${inCart?`✓ In Cart (${qty})`:'+ Add to Cart'}</button>`;
+
+  return `
+    <div class="prod-card ${inCart?'in-cart':''} ${oos?'oos':''}" id="pc-${p.id}">
+      <div class="prod-img">
+        ${imgContent}
+        ${badge}
+        ${favBtn}
+        ${oosHTML}
+      </div>
+      ${stockHTML}
+      <div class="prod-info">
+        <div class="prod-name">${p.name}</div>
+        ${p.size?`<div class="prod-size">${p.size}</div>`:''}
+        ${priceHTML}
+        ${p.moq>1?`<div class="prod-moq">Min order: ${p.moq}</div>`:''}
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty('${p.id}',-1)" ${oos?'disabled':''}>−</button>
+          <input type="number" class="qty-inp" id="qi-${p.id}"
+            value="${qty}" min="0" ${oos?'disabled readonly':''}
+            onchange="setQty('${p.id}',+this.value)">
+          <button class="qty-btn" onclick="changeQty('${p.id}',1)" ${oos?'disabled':''}>+</button>
+        </div>
+        ${addBtnHTML}
+      </div>
+    </div>`;
+}
+
+// Repeat order banner
+function renderRepeatBanner() {
+  const last = DB.get('lastOrder', null);
+  const banner = document.getElementById('repeat-banner');
+  if (!last || !last.items || !Object.keys(last.items).length) {
+    banner.classList.remove('show'); return;
+  }
+  const names = Object.entries(last.items)
+    .map(([id,q]) => { const p=products.find(x=>x.id===id); return p?`${p.name} ×${q}`:null; })
+    .filter(Boolean);
+  if (!names.length) { banner.classList.remove('show'); return; }
+  document.getElementById('rb-items').textContent =
+    names.slice(0,3).join(' · ') + (names.length>3?` +${names.length-3} more`:'');
+  banner.classList.add('show');
+}
+
+function loadRepeat() {
+  const last = DB.get('lastOrder', null);
+  if (!last) return;
+  let n = 0;
+  Object.entries(last.items).forEach(([id,q]) => {
+    if (products.find(p => p.id===id)) { cart[id]=q; n++; }
+  });
+  if (n) { renderProducts(); updateCartUI(); toast(`${n} items added from last order ✓`); }
+}
+
+// ═══════════════════════════════════════════════════════
+// CART LOGIC
+// ═══════════════════════════════════════════════════════
+function changeQty(id, delta) {
+  if (isOOS(products.find(p=>p.id===id)||{})) return;
+  const cur = cart[id] || 0;
+  const nq  = Math.max(0, cur + delta);
+  nq === 0 ? delete cart[id] : (cart[id] = nq);
+  // Update DOM without full re-render
+  const inp = document.getElementById('qi-'+id);
+  if (inp) inp.value = nq;
+  updateAddBtn(id, nq);
+  updateCardState(id, nq);
+  updateCartUI();
+}
+
+function setQty(id, qty) {
+  qty = Math.max(0, Math.floor(qty)||0);
+  qty === 0 ? delete cart[id] : (cart[id] = qty);
+  updateAddBtn(id, qty);
+  updateCardState(id, qty);
+  updateCartUI();
+}
+
+function addToCart(id) {
+  if (isOOS(products.find(p=>p.id===id)||{})) return;
+  if (!cart[id]) cart[id] = 1;
+  else cart[id]++;
+  const inp = document.getElementById('qi-'+id);
+  if (inp) inp.value = cart[id];
+  updateAddBtn(id, cart[id]);
+  updateCardState(id, cart[id]);
+  updateCartUI();
+  toast('Added ✓');
+  const b = document.getElementById('cart-badge');
+  if (b) { b.classList.add('pop'); setTimeout(()=>b.classList.remove('pop'),300); }
+}
+
+function updateAddBtn(id, qty) {
+  const btn = document.getElementById('ab-'+id);
+  if (!btn) return;
+  if (qty > 0) { btn.textContent = `✓ In Cart (${qty})`; btn.classList.add('added'); }
+  else { btn.textContent = '+ Add to Cart'; btn.classList.remove('added'); }
+}
+
+function updateCardState(id, qty) {
+  const card = document.getElementById('pc-'+id);
+  if (!card) return;
+  if (qty > 0) card.classList.add('in-cart');
+  else card.classList.remove('in-cart');
+}
+
+function cartTotal() {
+  const typeId = selectedType?.id;
+  return Object.entries(cart).reduce((t,[id,q]) => {
+    const p = products.find(x => x.id===id);
+    return t + (p ? resolvePrice(p, typeId) * q : 0);
+  }, 0);
+}
+
+function cartDefaultTotal() {
+  return Object.entries(cart).reduce((t,[id,q]) => {
+    const p = products.find(x => x.id===id);
+    return t + (p ? getDefaultPrice(p) * q : 0);
+  }, 0);
+}
+
+function cartCount() { return Object.values(cart).reduce((a,b)=>a+b,0); }
+
+function updateCartUI() {
+  const cnt = cartCount();
+  const tot = cartTotal();
+  const badge = document.getElementById('cart-badge');
+  if (badge) { badge.textContent=cnt; badge.classList.toggle('show', cnt>0); }
+  const fc = document.getElementById('fl-cart');
+  if (fc) {
+    if (cnt > 0) {
+      fc.classList.add('show');
+      document.getElementById('fl-cnt').textContent = `${cnt} item${cnt!==1?'s':''}`;
+      document.getElementById('fl-tot').textContent = `₹${tot.toLocaleString('en-IN')}`;
+    } else { fc.classList.remove('show'); }
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// PAGE 2 — CART RENDERING
+// ═══════════════════════════════════════════════════════
+function goToCart() { renderCartPage(); showPage('page-cart'); }
+
+function renderCartPage() {
+  const body = document.getElementById('cart-body');
+  const cnt  = cartCount();
+
+  if (!cnt) {
+    body.innerHTML = `<div class="empty-cart">
+      <div class="ic">🛒</div>
+      <h2>Your cart is empty</h2>
+      <p>Go back and add products</p>
+      <button class="empty-cart-btn" onclick="showPage('page-catalog');renderCatalog()">
+        Browse Products</button>
+    </div>`;
+    return;
+  }
+
+  const typeId = selectedType?.id;
+  const items  = Object.entries(cart)
+    .map(([id,q]) => ({p:products.find(x=>x.id===id), q}))
+    .filter(x => x.p);
+
+  const myTotal  = cartTotal();
+  const defTotal = cartDefaultTotal();
+  const totalSav = Math.max(0, defTotal - myTotal);
+  const lastCust = DB.get('lastCust', {});
+
+  body.innerHTML = `
+    <!-- Customer info form -->
+    <div class="order-form">
+      <div class="form-title">👤 Your Details</div>
+      <div class="form-field">
+        <label>Your Name *</label>
+        <input type="text" id="cn" placeholder="e.g. Ramesh Patel" value="${esc(lastCust.name||'')}">
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Phone *</label>
+          <input type="tel" id="cp" placeholder="9876543210" value="${esc(lastCust.phone||'')}">
+        </div>
+        <div class="form-field">
+          <label>Business Name</label>
+          <input type="text" id="cb" placeholder="Your shop" value="${esc(lastCust.biz||'')}">
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Delivery Address *</label>
+        <input type="text" id="ca" placeholder="Area / street in Surat" value="${esc(lastCust.addr||'')}">
+      </div>
+      <div class="form-field">
+        <label>Special Instructions</label>
+        <textarea id="cn2" placeholder="Timing, packing notes, etc.">${esc(lastCust.notes||'')}</textarea>
+      </div>
+    </div>
+
+    <!-- Cart items card -->
+    <div class="cart-card">
+      <div class="cart-card-hdr">
+        <div class="cart-card-title">📦 Items (${cnt})</div>
+        <button class="clear-btn" onclick="clearCart()">Clear All</button>
+      </div>
+      ${items.map(({p,q}) => {
+        const price = resolvePrice(p, typeId);
+        const def   = getDefaultPrice(p);
+        const sav   = Math.max(0, def-price);
+        const imgEl = p.image
+          ? `<img src="${p.image}" alt="${p.name}">`
+          : p.emoji||'📦';
+        return `
+        <div class="cart-item">
+          <div class="ci-img">${p.image?`<img src="${p.image}" alt="${p.name}">`:p.emoji||'📦'}</div>
+          <div class="ci-info">
+            <div class="ci-name">${p.name}</div>
+            <div class="ci-meta">${p.size||''}</div>
+            ${selectedType?`<div class="ci-type-price">₹${price}/${p.unit?.replace('per ','')||'unit'} — ${selectedType.name} rate</div>`:''}
+            ${sav>0&&settings.showSavings?`<div style="font-size:10.5px;color:var(--ok);font-weight:600">Saving ₹${sav} per ${p.unit?.replace('per ','')||'unit'}</div>`:''}
+          </div>
+          <div class="ci-right">
+            <div class="ci-qty">
+              <button class="ci-qbtn" onclick="cartCQ('${p.id}',-1)">−</button>
+              <span class="ci-qnum" id="cq-${p.id}">${q}</span>
+              <button class="ci-qbtn" onclick="cartCQ('${p.id}',1)">+</button>
+            </div>
+            <div class="ci-price">₹${(price*q).toLocaleString('en-IN')}</div>
+            <div class="ci-sub">₹${price} × ${q}</div>
+          </div>
+        </div>`}).join('')}
+    </div>
+
+    <!-- Summary -->
+    <div class="cart-summary">
+      <div class="sum-row"><span>Subtotal (${cnt} items)</span><span>₹${myTotal.toLocaleString('en-IN')}</span></div>
+      ${totalSav>0&&settings.showSavings?`<div class="sum-row savings"><span>💰 Your savings vs default</span><span>-₹${totalSav.toLocaleString('en-IN')}</span></div>`:''}
+      <div class="sum-row"><span>Delivery</span><span style="color:var(--t)">FREE</span></div>
+      <div class="sum-row total"><span>Total</span><span>₹${myTotal.toLocaleString('en-IN')}</span></div>
+      <div class="sum-note">
+        ⚠️ ${settings.priceNote||'Final prices confirmed on WhatsApp'}<br>
+        🚚 ${settings.deliveryNote||'Free delivery in Surat'}
+      </div>
+    </div>`;
+}
+
+function cartCQ(id, delta) {
+  changeQty(id, delta);
+  const cnt  = cart[id] || 0;
+  const qnum = document.getElementById('cq-'+id);
+  if (cnt === 0) { renderCartPage(); return; }
+  if (qnum) qnum.textContent = cnt;
+  // Update totals in cart page without full re-render
+  renderCartPage();
+}
+
+function clearCart() {
+  if (!confirm('Clear all items?')) return;
+  cart = {}; updateCartUI(); renderCartPage();
+}
+
+// ═══════════════════════════════════════════════════════
+// WHATSAPP ORDER (upgraded — uses resolved price)
+// ═══════════════════════════════════════════════════════
+function placeOrder() {
+  const name  = (document.getElementById('cn')?.value||'').trim();
+  const phone = (document.getElementById('cp')?.value||'').trim();
+  const addr  = (document.getElementById('ca')?.value||'').trim();
+  const biz   = (document.getElementById('cb')?.value||'').trim();
+  const notes = (document.getElementById('cn2')?.value||'').trim();
+
+  if (!name)  { toast('Please enter your name'); document.getElementById('cn')?.focus(); return; }
+  if (!phone) { toast('Please enter phone number'); document.getElementById('cp')?.focus(); return; }
+  if (!addr)  { toast('Please enter delivery address'); document.getElementById('ca')?.focus(); return; }
+  if (!cartCount()) { toast('Cart is empty!'); return; }
+
+  DB.set('lastCust', {name, phone, biz, addr, notes});
+
+  const typeId  = selectedType?.id;
+  const typeNm  = selectedType?.name || 'Customer';
+  const items   = Object.entries(cart)
+    .map(([id,q]) => ({p:products.find(x=>x.id===id), q}))
+    .filter(x => x.p);
+  const myTotal = cartTotal();
+  const defTotal= cartDefaultTotal();
+  const savings = Math.max(0, defTotal - myTotal);
+
+  // Build WhatsApp message
+  let msg = `🏪 *${settings.bizName||'XL Traders'} — New Order*\n`;
+  msg += `━━━━━━━━━━━━━━━━━━━\n`;
+  msg += `👤 *Name:* ${name}\n`;
+  msg += `📞 *Phone:* ${phone}\n`;
+  if (biz) msg += `🏪 *Business:* ${biz}\n`;
+  msg += `📍 *Address:* ${addr}\n`;
+  msg += `🏷️ *Type:* ${typeNm}\n`;
+  msg += `━━━━━━━━━━━━━━━━━━━\n`;
+  msg += `📦 *ITEMS:*\n\n`;
+  items.forEach(({p,q},i) => {
+    const price = resolvePrice(p, typeId);
+    msg += `${i+1}. *${p.name}*\n`;
+    if (p.size) msg += `   ${p.size}\n`;
+    msg += `   Qty: ${q} × ₹${price} = ₹${(price*q).toLocaleString('en-IN')}\n\n`;
+  });
+  msg += `━━━━━━━━━━━━━━━━━━━\n`;
+  msg += `💰 *Total: ₹${myTotal.toLocaleString('en-IN')}*\n`;
+  if (savings>0) msg += `🎁 Your savings: ₹${savings.toLocaleString('en-IN')}\n`;
+  msg += `(Final price confirmed on WhatsApp)\n`;
+  if (notes) msg += `\n📝 *Notes:* ${notes}\n`;
+  msg += `\n✅ Please confirm & process this order.`;
+
+  // Save order to history (NEW — detailed)
+  const order = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,5),
+    date: new Date().toISOString(),
+    dateDisp: new Date().toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+    customer: {name, phone, biz, addr},
+    typeId, typeName: typeNm,
+    items: items.map(({p,q}) => ({
+      id:p.id, name:p.name, size:p.size,
+      qty:q, price:resolvePrice(p,typeId),
+      subtotal:resolvePrice(p,typeId)*q
+    })),
+    total: myTotal,
+    defTotal,
+    savings,
+    status:'sent'
+  };
+  orderHistory.unshift(order);
+  DB.set('orderHistory', orderHistory.slice(0,100));
+
+  // Save last order for repeat
+  DB.set('lastOrder', {items:{...cart}, typeId});
+
+  // Track analytics (NEW)
+  trackOrderAnalytics(items, typeId);
+
+  // Decrement stock (NEW)
+  decrementStock(items);
+
+  window.open(`https://wa.me/${settings.waNum}?text=${encodeURIComponent(msg)}`, '_blank');
+
+  // Reset cart
+  cart = {}; updateCartUI();
+  toast('Order sent on WhatsApp! 🎉');
+  setTimeout(()=>{ showPage('page-catalog'); renderCatalog(); }, 1400);
+}
+
+// ═══════════════════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════════════════
+function onSearch(val) {
+  searchQ = val.trim();
+  document.getElementById('search-clr')?.classList.toggle('show', searchQ.length>0);
+  if (searchQ) activeCat = 'all';
+  renderCatTabs(); renderProducts();
+}
+function clearSearch() {
+  const inp = document.getElementById('search-inp');
+  if (inp) inp.value = '';
+  document.getElementById('search-clr')?.classList.remove('show');
+  searchQ = ''; renderProducts();
+}
+
+// ═══════════════════════════════════════════════════════
+// ADMIN PANEL — Fully upgraded
+// ═══════════════════════════════════════════════════════
+let admTapCnt=0, admTapTmr=null;
+function adminTap() {
+  admTapCnt++; clearTimeout(admTapTmr);
+  admTapTmr = setTimeout(()=>admTapCnt=0, 2500);
+  if (admTapCnt>=5) {
+    admTapCnt=0;
+    const pw = prompt('Admin Password:');
+    if (pw==='xltraders123'||pw==='admin'||pw==='xl123') {
+      initAdmin(); showPage('page-admin');
+    } else if (pw!==null) toast('Wrong password');
+  }
+}
+
+function admTab(name) {
+  const names = ['products','add','analytics','orders','settings'];
+  document.querySelectorAll('.adm-tab').forEach((t,i) => t.classList.toggle('active', names[i]===name));
+  document.querySelectorAll('.adm-sec').forEach(s => s.classList.remove('active'));
+  document.getElementById('adm-'+name)?.classList.add('active');
+  if (name==='products')  admRenderProds();
+  if (name==='analytics') admRenderAnalytics();
+  if (name==='orders')    admRenderOrders();
+  if (name==='settings')  admLoadSettings();
+  if (name==='add')       { initProductForm(); }
+}
+
+function initAdmin() {
+  admRenderProds();
+  buildPriceGrid();
+  populateFormSelects();
+}
+
+// ── Admin: Products list ──
+let admSrchQ='';
+function admSearchProds(v) { admSrchQ=v; admRenderProds(); }
+
+function admRenderProds() {
+  const catF  = document.getElementById('adm-filter-cat')?.value||'';
+  const actF  = document.getElementById('adm-filter-active')?.value||'';
+  let prods = [...products];
+  if (admSrchQ) {
+    const q = admSrchQ.toLowerCase();
+    prods = prods.filter(p => p.name.toLowerCase().includes(q));
+  }
+  if (catF)  prods = prods.filter(p => p.category===catF);
+  if (actF==='1') prods = prods.filter(p => p.active!==false);
+  if (actF==='0') prods = prods.filter(p => p.active===false);
+
+  // Category filter options
+  const catSel = document.getElementById('adm-filter-cat');
+  if (catSel && catSel.options.length<=1) {
+    catSel.innerHTML = '<option value="">All Categories</option>' +
+      categories.map(c=>`<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
+  }
+
+  const badge = document.getElementById('prod-count-badge');
+  if (badge) badge.textContent = prods.length;
+
+  const list = document.getElementById('adm-prod-list');
+  if (!list) return;
+  if (!prods.length) { list.innerHTML='<div style="text-align:center;padding:24px;color:var(--n400)">No products</div>'; return; }
+
+  list.innerHTML = prods.map(p => {
+    const sl = stockLabel(p);
+    return `
+    <div class="adm-prod-row">
+      <div class="adm-prod-img">
+        ${p.image?`<img src="${p.image}" alt="${p.name}">`:(p.emoji||'📦')}
+      </div>
+      <div class="adm-prod-info">
+        <div class="adm-prod-name">${p.name}</div>
+        <div class="adm-prod-meta">
+          ₹${getDefaultPrice(p)} default · ${p.size||'—'} ·
+          <span class="stock-badge ${sl.cls}" style="font-size:10px;padding:1px 7px">${sl.text}</span>
+          ${p.active===false?'<span style="color:var(--red);font-size:10px;margin-left:4px">⛔ Hidden</span>':''}
+          ${p.popularityScore?`· 🔥 ${p.popularityScore} orders`:''}
+        </div>
+      </div>
+      <div class="adm-prod-acts">
+        <button class="adm-edit" onclick="admEditProd('${p.id}')">Edit</button>
+        <button class="adm-del" onclick="admDelProd('${p.id}')">Del</button>
+      </div>
+    </div>`}).join('');
+}
+
+// ── Admin: Form init ──
+function initProductForm() {
+  buildPriceGrid();
+  populateFormSelects();
+}
+
+function populateFormSelects() {
+  const catSel = document.getElementById('ep-cat');
+  if (catSel) catSel.innerHTML = '<option value="">Select category</option>' +
+    categories.map(c=>`<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
+
+  const ctSel = document.getElementById('ep-ctype');
+  if (ctSel) ctSel.innerHTML = CTYPES.map(ct=>`<option value="${ct.id}">${ct.icon} ${ct.name}</option>`).join('');
+}
+
+// NEW: Build per-customer pricing grid
+function buildPriceGrid() {
+  const grid = document.getElementById('price-grid');
+  if (!grid) return;
+  // Remove old type rows
+  grid.querySelectorAll('.pg-ctype-row').forEach(r=>r.remove());
+  // Append customer type rows
+  CTYPES.forEach(ct => {
+    if (grid.querySelector(`#pp-${ct.id}`)) return;
+    const row = document.createElement('div');
+    row.className = 'pg-row pg-ctype-row';
+    row.innerHTML = `
+      <div class="pg-label"><span>${ct.icon}</span>${ct.name}</div>
+      <input type="number" class="pg-inp" id="pp-${ct.id}"
+        placeholder="Default" min="0" step="0.5"
+        oninput="highlightPriceInput('${ct.id}')">`;
+    grid.appendChild(row);
+  });
+}
+
+function highlightPriceInput(typeId) {
+  const def = parseFloat(document.getElementById('pp-default')?.value)||0;
+  const inp = document.getElementById('pp-'+typeId);
+  if (!inp) return;
+  const val = parseFloat(inp.value)||0;
+  if (val>0 && val!==def) inp.classList.add('is-diff');
+  else inp.classList.remove('is-diff');
+}
+
+function syncPriceInputs() {
+  CTYPES.forEach(ct => highlightPriceInput(ct.id));
+}
+
+// NEW: Image upload with compression
+function handleImgUpload(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX = 480;
+      let w=img.width, h=img.height;
+      if (w>h) { if(w>MAX){h*=MAX/w;w=MAX;} } else { if(h>MAX){w*=MAX/h;h=MAX;} }
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      const b64 = canvas.toDataURL('image/jpeg',0.78);
+      document.getElementById('ep-img').value = b64;
+      document.getElementById('ep-img-url').value = '';
+      showImgPreview(b64);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleImgUrl(url) {
+  if (!url) return;
+  document.getElementById('ep-img').value = '';
+  showImgPreview(url);
+}
+
+function showImgPreview(src) {
+  const prev = document.getElementById('img-preview');
+  const hint = document.getElementById('img-drop-hint');
+  const area = document.getElementById('img-drop-area');
+  if (!prev) return;
+  prev.src = src; prev.classList.add('show');
+  if (hint) hint.style.display='none';
+  if (area) area.classList.add('has-img');
+}
+
+function clearImg() {
+  document.getElementById('ep-img').value='';
+  document.getElementById('ep-img-url').value='';
+  const prev=document.getElementById('img-preview');
+  if (prev) { prev.src=''; prev.classList.remove('show'); }
+  const hint=document.getElementById('img-drop-hint');
+  if (hint) hint.style.display='block';
+  const area=document.getElementById('img-drop-area');
+  if (area) area.classList.remove('has-img');
+}
+
+// NEW: Stock badge preview in form
+function updateStockBadge(val) {
+  const badge = document.getElementById('stock-badge-preview');
+  if (!badge) return;
+  const n = val===''?null:parseInt(val);
+  const s = stockLabel({stock:n});
+  badge.className = 'stock-badge '+s.cls;
+  badge.textContent = s.text;
+}
+
+function resetProductForm() {
+  document.getElementById('ep-id').value='';
+  document.getElementById('adm-form-title').textContent='➕ Add New Product';
+  ['ep-name','ep-size','ep-unit','ep-emoji'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  const els = ['ep-moq','ep-badge','ep-cat','ep-stock'];
+  els.forEach(id=>{ const el=document.getElementById(id); if(el) el.value=id==='ep-moq'?'1':''; });
+  // Clear prices
+  document.getElementById('pp-default').value='';
+  CTYPES.forEach(ct=>{ const el=document.getElementById('pp-'+ct.id); if(el){el.value='';el.classList.remove('is-diff');} });
+  // Clear image
+  clearImg();
+  // Reset active toggle
+  const act=document.getElementById('ep-active');
+  if(act) act.classList.add('on');
+  // Reset stock badge
+  updateStockBadge('');
+  // Reset ctype select (all selected)
+  const cs=document.getElementById('ep-ctype');
+  if(cs) Array.from(cs.options).forEach(o=>o.selected=true);
+}
+
+function admEditProd(id) {
+  const p = products.find(x=>x.id===id); if(!p) return;
+  admTab('add');
+  initProductForm();
+
+  document.getElementById('ep-id').value=p.id;
+  document.getElementById('adm-form-title').textContent='✏️ Edit: '+p.name;
+  document.getElementById('ep-name').value=p.name||'';
+  document.getElementById('ep-size').value=p.size||'';
+  document.getElementById('ep-unit').value=p.unit||'';
+  document.getElementById('ep-emoji').value=p.emoji||'';
+  document.getElementById('ep-moq').value=p.moq||1;
+  document.getElementById('ep-badge').value=p.badge||'';
+  document.getElementById('ep-cat').value=p.category||'';
+  document.getElementById('ep-stock').value = (p.stock===null||p.stock===undefined)?'':p.stock;
+  updateStockBadge(document.getElementById('ep-stock').value);
+
+  // Prices (NEW)
+  const def = typeof p.price==='number' ? p.price : (p.price?.default||0);
+  document.getElementById('pp-default').value=def||'';
+  CTYPES.forEach(ct=>{
+    const el=document.getElementById('pp-'+ct.id); if(!el) return;
+    const v = typeof p.price==='object' ? (p.price[ct.id]||'') : '';
+    el.value=v;
+    if(v && v!=def) el.classList.add('is-diff'); else el.classList.remove('is-diff');
+  });
+
+  // Image (NEW)
+  if(p.image){ showImgPreview(p.image); document.getElementById('ep-img').value=p.image; }
+  else clearImg();
+
+  // Customer types
+  const cs=document.getElementById('ep-ctype');
+  if(cs) Array.from(cs.options).forEach(o=>o.selected=(p.customerType||[]).includes(o.value));
+
+  // Active toggle
+  const act=document.getElementById('ep-active');
+  if(act){ if(p.active===false) act.classList.remove('on'); else act.classList.add('on'); }
+
+  window.scrollTo(0,0);
+}
+
+function saveProduct() {
+  const name = document.getElementById('ep-name')?.value.trim();
+  const cat  = document.getElementById('ep-cat')?.value;
+  const defP = parseFloat(document.getElementById('pp-default')?.value)||0;
+  if (!name){ toast('Enter product name!'); return; }
+  if (!cat) { toast('Select category!');   return; }
+  if (!defP){ toast('Enter default price!'); return; }
+
+  const id     = document.getElementById('ep-id')?.value;
+  const ctSel  = document.getElementById('ep-ctype');
+  const ctypes = ctSel ? Array.from(ctSel.selectedOptions).map(o=>o.value) : CTYPES.map(t=>t.id);
+  if (!ctypes.length){ toast('Select at least one customer type'); return; }
+
+  // Build price object (NEW)
+  const price = {default: defP};
+  CTYPES.forEach(ct=>{
+    const v = parseFloat(document.getElementById('pp-'+ct.id)?.value);
+    if(!isNaN(v) && v>0) price[ct.id]=v;
+  });
+
+  // Stock (NEW)
+  const stockVal = document.getElementById('ep-stock')?.value;
+  const stock = (stockVal===''||stockVal===null||stockVal===undefined) ? null : parseInt(stockVal);
+
+  // Image (NEW)
+  const imgUrl = document.getElementById('ep-img-url')?.value.trim();
+  const imgB64 = document.getElementById('ep-img')?.value;
+  const image  = imgUrl||imgB64||null;
+
+  // Active
+  const active = document.getElementById('ep-active')?.classList.contains('on') !== false;
+
+  // Existing product data (preserve analytics)
+  const existing = products.find(p=>p.id===id);
+
+  const prod = {
+    id: id||('p'+Date.now().toString(36)),
+    name, category:cat,
+    customerType: ctypes,
+    size:   document.getElementById('ep-size')?.value.trim()||'',
+    price,
+    unit:   document.getElementById('ep-unit')?.value.trim()||'per pack',
+    moq:    parseInt(document.getElementById('ep-moq')?.value)||1,
+    emoji:  document.getElementById('ep-emoji')?.value.trim()||'📦',
+    badge:  document.getElementById('ep-badge')?.value||'',
+    image, stock, active,
+    popularityScore: existing?.popularityScore||0,
+    orderCount:      existing?.orderCount||0,
+  };
+
+  if (id) {
+    const idx = products.findIndex(p=>p.id===id);
+    if (idx>=0) products[idx]=prod;
+  } else {
+    products.push(prod);
+  }
+  DB.set('products', products);
+  toast(id?'Product updated ✓':'Product added ✓');
+  resetProductForm();
+  admTab('products');
+}
+
+function admDelProd(id) {
+  if (!confirm('Delete this product?')) return;
+  products = products.filter(p=>p.id!==id);
+  DB.set('products', products);
+  admRenderProds();
+  toast('Product deleted');
+}
+
+// ── Admin: Analytics (NEW) ──
+function admRenderAnalytics() {
+  const allOrders = orderHistory;
+  const totalRev  = allOrders.reduce((a,o)=>a+(o.total||0),0);
+  const totalSav  = allOrders.reduce((a,o)=>a+(o.savings||0),0);
+
+  // Stats grid
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${allOrders.length}</div><div class="stat-lbl">Total Orders</div></div>
+    <div class="stat-card"><div class="stat-num">₹${totalRev.toLocaleString('en-IN')}</div><div class="stat-lbl">Revenue (estimated)</div></div>
+    <div class="stat-card"><div class="stat-num">${products.filter(p=>p.active!==false).length}</div><div class="stat-lbl">Active Products</div></div>
+    <div class="stat-card"><div class="stat-num">₹${totalSav.toLocaleString('en-IN')}</div><div class="stat-lbl">Customer Savings Given</div></div>`;
+
+  // Top products
+  const tops = [...products].sort((a,b)=>(b.popularityScore||0)-(a.popularityScore||0)).slice(0,10);
+  const maxScore = tops[0]?.popularityScore||1;
+  const tpl = document.getElementById('top-prods-list');
+  if (!tops.filter(p=>p.popularityScore>0).length) {
+    tpl.innerHTML='<div style="text-align:center;padding:24px;color:var(--n400)">No order data yet</div>';
+  } else {
+    tpl.innerHTML = tops.filter(p=>p.popularityScore>0).map((p,i)=>`
+      <div class="top-prod-row">
+        <div class="top-rank ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i+1}</div>
+        <div class="top-bar-wrap">
+          <div class="top-name">${p.name}</div>
+          <div class="top-bar-bg">
+            <div class="top-bar" style="width:${Math.round((p.popularityScore/maxScore)*100)}%"></div>
+          </div>
+        </div>
+        <div class="top-score">${p.popularityScore}</div>
+      </div>`).join('');
+  }
+
+  // Sales by customer type
+  const typeSales = {};
+  CTYPES.forEach(ct=>typeSales[ct.id]={name:ct.name,icon:ct.icon,cnt:0,rev:0});
+  allOrders.forEach(o=>{
+    if(typeSales[o.typeId]){typeSales[o.typeId].cnt++;typeSales[o.typeId].rev+=o.total||0;}
+  });
+  const tsl = document.getElementById('type-sales-list');
+  const typeArr = Object.values(typeSales).filter(t=>t.cnt>0).sort((a,b)=>b.rev-a.rev);
+  if (!typeArr.length) {
+    tsl.innerHTML='<div style="text-align:center;padding:20px;color:var(--n400)">No data yet</div>';
+  } else {
+    tsl.innerHTML = typeArr.map(t=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--n100)">
+        <span style="font-weight:700;font-size:14px">${t.icon} ${t.name}</span>
+        <div style="text-align:right">
+          <div style="font-family:var(--ff);font-weight:700;color:var(--t)">₹${t.rev.toLocaleString('en-IN')}</div>
+          <div style="font-size:12px;color:var(--n400)">${t.cnt} order${t.cnt!==1?'s':''}</div>
+        </div>
+      </div>`).join('');
+  }
+}
+
+// ── Admin: Orders (NEW — enhanced) ──
+function admRenderOrders(srch='') {
+  const badge = document.getElementById('order-count-badge');
+  if (badge) badge.textContent = orderHistory.length;
+
+  let orders = [...orderHistory];
+  if (srch) {
+    const q = srch.toLowerCase();
+    orders = orders.filter(o=>
+      (o.customer?.name||'').toLowerCase().includes(q) ||
+      (o.customer?.phone||'').includes(q) ||
+      (o.typeName||'').toLowerCase().includes(q)
+    );
+  }
+
+  const el = document.getElementById('orders-list');
+  if (!el) return;
+  if (!orders.length) {
+    el.innerHTML='<div style="text-align:center;padding:32px;color:var(--n400)">No orders yet</div>'; return;
+  }
+  el.innerHTML = orders.slice(0,50).map(o=>`
+    <div class="order-row">
+      <div class="ord-top">
+        <div>
+          <div class="ord-cust">${o.customer?.name||'Unknown'}
+            <span class="ord-type-pill">${o.typeName||''}</span>
+          </div>
+          <div class="ord-meta">📞 ${o.customer?.phone||'—'} · ${o.dateDisp||o.date}</div>
+        </div>
+        <div class="ord-total">₹${(o.total||0).toLocaleString('en-IN')}</div>
+      </div>
+      <div class="ord-items">${(o.items||[]).slice(0,3).map(it=>`${it.name} ×${it.qty}`).join(' · ')}${(o.items||[]).length>3?` +${(o.items||[]).length-3} more`:''}</div>
+      ${o.customer?.addr?`<div style="font-size:11.5px;color:var(--n400);margin-top:3px">📍 ${o.customer.addr}</div>`:''}
+      ${o.savings>0?`<div style="font-size:11.5px;color:var(--ok);margin-top:2px;font-weight:600">💰 Customer saved ₹${o.savings.toLocaleString('en-IN')}</div>`:''}
+    </div>`).join('');
+}
+
+// ── Admin: Settings ──
+function admLoadSettings() {
+  const f = id => document.getElementById(id);
+  const s = settings;
+  if(f('s-name'))  f('s-name').value  = s.bizName||'';
+  if(f('s-wa'))    f('s-wa').value    = s.waNum||'';
+  if(f('s-wa2'))   f('s-wa2').value   = s.waNum2||'';
+  if(f('s-city'))  f('s-city').value  = s.city||'';
+  if(f('s-del'))   f('s-del').value   = s.deliveryNote||'';
+  const sp=f('s-prices'); if(sp){ if(s.showPrices!==false) sp.classList.add('on'); else sp.classList.remove('on'); }
+  const ss=f('s-savings'); if(ss){ if(s.showSavings!==false) ss.classList.add('on'); else ss.classList.remove('on'); }
+  renderCatsList();
+}
+
+function saveSettings() {
+  settings = {
+    bizName:      document.getElementById('s-name')?.value.trim()||'XL Traders',
+    waNum:        document.getElementById('s-wa')?.value.trim()||'917778052990',
+    waNum2:       document.getElementById('s-wa2')?.value.trim()||'',
+    city:         document.getElementById('s-city')?.value.trim()||'Surat',
+    deliveryNote: document.getElementById('s-del')?.value.trim()||'Free delivery in Surat',
+    showPrices:   document.getElementById('s-prices')?.classList.contains('on')!==false,
+    showSavings:  document.getElementById('s-savings')?.classList.contains('on')!==false,
+    priceNote:    settings.priceNote||'Final prices confirmed on WhatsApp',
+  };
+  DB.set('settings', settings);
+  toast('Settings saved ✓');
+}
+
+function renderCatsList() {
+  const el = document.getElementById('cats-list'); if(!el) return;
+  el.innerHTML = categories.map(c=>`
+    <div class="cat-adm-row">
+      <span style="font-size:22px">${c.emoji}</span>
+      <span style="flex:1;font-weight:600;font-size:13px">${c.name}</span>
+      <button class="adm-del" onclick="delCat('${c.id}')">Del</button>
+    </div>`).join('');
+}
+
+function addCategory() {
+  const name  = document.getElementById('nc-name')?.value.trim();
+  const emoji = document.getElementById('nc-emoji')?.value.trim()||'📦';
+  if(!name){ toast('Enter category name!'); return; }
+  categories.push({id:name.toLowerCase().replace(/\s+/g,'-'),name,emoji});
+  DB.set('categories',categories);
+  document.getElementById('nc-name').value='';
+  document.getElementById('nc-emoji').value='';
+  renderCatsList();
+  toast('Category added ✓');
+}
+
+function delCat(id) {
+  if(!confirm('Delete this category?')) return;
+  categories=categories.filter(c=>c.id!==id);
+  DB.set('categories',categories);
+  renderCatsList();
+}
+
+// Data management
+function exportData() {
+  const d={v:2,exported:new Date().toISOString(),products,categories,settings,orderHistory};
+  const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`xltraders-v2-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  toast('Exported ✓');
+}
+
+function importData(input) {
+  const f=input.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      if(d.products)      {products=d.products;      DB.set('products',products);}
+      if(d.categories)    {categories=d.categories;  DB.set('categories',categories);}
+      if(d.settings)      {settings=d.settings;      DB.set('settings',settings);}
+      if(d.orderHistory)  {orderHistory=d.orderHistory; DB.set('orderHistory',orderHistory);}
+      toast('Imported! Reloading...'); setTimeout(()=>location.reload(),1200);
+    } catch{ toast('Invalid file!'); }
+  };
+  r.readAsText(f); input.value='';
+}
+
+function resetDefaults() {
+  if(!confirm('⚠️ Reset ALL data to default? This cannot be undone.')) return;
+  DB.set('products',DEF_PRODUCTS); DB.set('categories',DEF_CATS);
+  DB.set('settings',DEF_SETTINGS); DB.del('orderHistory');
+  toast('Reset done. Reloading...'); setTimeout(()=>location.reload(),1200);
+}
+
+// ═══════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════
+function esc(s){ return (s||'').replace(/[<>"'&]/g,c=>({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','&':'&amp;'}[c])); }
+
+let _toastTmr;
+function toast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(_toastTmr);
+  _toastTmr=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ═══════════════════════════════════════════════════════
+// PWA (lightweight inline service worker)
+// ═══════════════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  try {
+    const sw = `
+      const C='xlt-v2';
+      self.addEventListener('install',e=>self.skipWaiting());
+      self.addEventListener('fetch',e=>{
+        if(e.request.method!=='GET') return;
+        e.respondWith(caches.open(C).then(c=>
+          c.match(e.request).then(r=>r||fetch(e.request).then(res=>{c.put(e.request,res.clone());return res;}))
+        ).catch(()=>fetch(e.request)));
+      });`;
+    const blob = new Blob([sw],{type:'application/javascript'});
+    navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.shiftKey && e.key==='A') { initAdmin(); showPage('page-admin'); }
+  if (e.key==='Escape') showPage('page-catalog');
+});
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Load persisted data
+  products     = DB.get('products',   DEF_PRODUCTS);
+  categories   = DB.get('categories', DEF_CATS);
+  settings     = DB.get('settings',   DEF_SETTINGS);
+  favorites    = DB.get('favorites',  {});
+  orderHistory = DB.get('orderHistory',[]);
+
+  renderCtypes();
+
+  // Check hash for admin shortcut
+  if (location.hash==='#admin') {
+    const pw=prompt('Admin Password:');
+    if (pw==='xltraders123'||pw==='xl123') { initAdmin(); showPage('page-admin'); }
+  }
+});
+</script>
+</body>
+</html>
