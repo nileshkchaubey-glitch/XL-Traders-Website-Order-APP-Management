@@ -1,0 +1,102 @@
+{
+  "theme": "light",
+  "archetype": "Swiss & High-Contrast",
+  "domain": "B2B Business Catalog / Internal Trade App",
+  "emotional_tone": "Utilitarian, Fast, Reliable, Data-Dense",
+  "colors": {
+    "background": "#FAFAFA",
+    "surface": "#FFFFFF",
+    "border": "#E5E5E5",
+    "text_primary": "#171717",
+    "text_secondary": "#737373",
+    "primary": "#0055FF",
+    "primary_hover": "#0044CC",
+    "accent_warning": "#F59E0B",
+    "accent_error": "#EF4444",
+    "accent_success": "#25D366",
+    "neutral_highlight": "#F5F5F5"
+  },
+  "typography": {
+    "font_family_headings": "Cabinet Grotesk, sans-serif",
+    "font_family_body": "IBM Plex Sans, sans-serif",
+    "rules": {
+      "headings": "Tracking-tight, uppercase for small labels, solid weight contrast (Regular vs Bold).",
+      "body": "Optimize for numeric legibility and tabular data. Use tabular-nums for pricing and quantities.",
+      "h1": "text-3xl sm:text-4xl font-bold tracking-tight",
+      "h2": "text-xl sm:text-2xl font-semibold",
+      "h3": "text-lg sm:text-xl font-medium",
+      "body_text": "text-sm sm:text-base",
+      "labels": "text-xs font-semibold tracking-widest uppercase text-text_secondary"
+    }
+  },
+  "spacing_and_layout": {
+    "philosophy": "Control Room Grid. High data density for internal staff, mobile-friendly for customer catalog.",
+    "container_padding": "p-4 sm:p-6",
+    "gap_system": "Use gap-4 for dense widgets, gap-6 for section separations.",
+    "grid_strategy": {
+      "dashboard": "grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4",
+      "catalog": "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-6 gap-4"
+    },
+    "borders_and_radius": "radius-sm (2px to 4px). Sharp, crisp edges. Avoid large rounded corners. 1px solid borders everywhere."
+  },
+  "component_strategies": {
+    "tables": "Flat style. No container shadows. Zebra-striping or 1px bottom border per row. Action buttons on hover.",
+    "forms": "Shadcn based. radius-sm. Clear focus states with ring-2 ring-primary ring-offset-1.",
+    "cards": "Cardless approach preferred. Use 1px border with background-surface, NO shadow. On hover, apply subtle shadow-sm.",
+    "buttons": "Utilitarian. Primary is deep blue, secondary is outline-grey. WhatsApp share button MUST use #25D366 (accent_success).",
+    "image_placeholders": "For missing images, use a stark background (e.g., #F5F5F5) with a centered icon (Phosphor Image Broken) in accent_error. Must be highly visible to staff.",
+    "badges": "Flat, text-xs, rounded-none or rounded-sm. Use for 'Category', 'Status', and 'Pack Size'."
+  },
+  "interactions_and_motion": {
+    "hover_states": "Crisp background darkens or text color shifts. No bouncy animations.",
+    "transitions": "transition-colors duration-150 ease-in-out",
+    "focus": "High contrast outline. accessibility-first."
+  },
+  "icons": {
+    "library": "@phosphor-icons/react",
+    "style": "Regular or Bold weight, never Duotone (too playful for this data-dense app).",
+    "usage": "Use consistently for quick actions (edit, delete, share, upload)."
+  },
+  "media": {
+    "image_urls": {
+      "logo": {
+        "url": "https://static.prod-images.emergentagent.com/jobs/c762241c-b9f7-466b-88e2-fa15530f6b0c/images/97e43cb292f2e9a5df8433e55cf9dbf1111f684325d4db8fb2bd768131a34663.png",
+        "description": "XL Traders flat, monochrome logo.",
+        "category": "brand"
+      },
+      "hero_background": {
+        "url": "https://static.prod-images.emergentagent.com/jobs/c762241c-b9f7-466b-88e2-fa15530f6b0c/images/5f50499dc63be86223a4f2e63f06af7f82d1b22c7f550037a47aa38645975611.png",
+        "description": "Minimalist light texture for authentication or public catalog header.",
+        "category": "background"
+      },
+      "product_sample_1": {
+        "url": "https://images.unsplash.com/photo-1716193348750-9e22b67718c6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwxfHx3aG9sZXNhbGUlMjBwYWNrYWdpbmclMjBib3hlc3xlbnwwfHx8fDE3NzgwODMzNzN8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Blue box with gold logo",
+        "category": "product_placeholder"
+      },
+      "product_sample_2": {
+        "url": "https://images.unsplash.com/photo-1578875061782-cb30db8a646b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2ODh8MHwxfHNlYXJjaHwxfHxidWxrJTIwc3RhdGlvbmVyeSUyMG9mZmljZSUyMHN1cHBsaWVzfGVufDB8fHx8MTc3ODA4MzM3NHww&ixlib=rb-4.1.0&q=85",
+        "description": "Assorted pencils and pens (stationery)",
+        "category": "product_placeholder"
+      },
+      "product_sample_3": {
+        "url": "https://images.unsplash.com/photo-1716540103530-cc33cdd20cde?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwzfHx3aG9sZXNhbGUlMjBwYWNrYWdpbmclMjBib3hlc3xlbnwwfHx8fDE3NzgwODMzNzN8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Black wholesale box",
+        "category": "product_placeholder"
+      }
+    }
+  },
+  "accessibility_and_testing": {
+    "contrast": "Ensure APCA/WCAG standards. Text on primary buttons MUST be white.",
+    "testing_attributes": "Add data-testid to ALL interactive elements (e.g., data-testid='add-product-btn', data-testid='whatsapp-share-btn')."
+  },
+  "instructions_to_main_agent": {
+    "architecture": "Single Page Application (React) using Tailwind CSS. Use Shadcn UI primitives but strip away heavy radiuses and drop-shadows to match the Swiss minimalist aesthetic.",
+    "fonts_installation": "Add Google Fonts imports for 'Cabinet Grotesk' (if available, else 'Space Grotesk' or similar fallback, but prefer 'Cabinet Grotesk' from fontshare if possible, or just standard 'Inter' replacement) and 'IBM Plex Sans' in index.html or global css.",
+    "specific_features": [
+      "Auto-split Pack Info: Implement regex to parse text like '(6000 pcs)' or '10 roll' from the item_name field natively in the 'Add Product' form.",
+      "WhatsApp Share: Construct a URL using 'https://wa.me/?text=...' with product details.",
+      "Image Manager: Build a grid view specifically highlighting products with 'Missing Image' status."
+    ]
+  }
+}
